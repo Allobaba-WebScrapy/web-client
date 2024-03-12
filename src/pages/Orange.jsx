@@ -3,7 +3,7 @@ import React from 'react';
 const Orange = () => {
     return (
         <div>
-            Orange
+            hamza page here 
             {/* Your component code here */}
         </div>
     );
