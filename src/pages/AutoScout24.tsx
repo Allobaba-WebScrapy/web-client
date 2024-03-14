@@ -7,6 +7,7 @@ import { useSelector ,useDispatch} from "react-redux";
 
 const AutoScout24 = () => {
     const requestData = useSelector((state: RootState) => state.autoscout24.requestData);
+    const responseCars = useSelector((state: RootState) => state.autoscout24.cars);
     // const data = useSelector((state: RootState) => state.autoscout24.data);
     const dispatch = useDispatch<AppDispatch>();
     useEffect(() => {
@@ -88,6 +89,51 @@ const AutoScout24 = () => {
     return (
         <div>
             <ScrapySearchCar handleSubmit={handleSubmit} />
+            
+            
+                    {/* cars{
+    model: "CDI AMG Pakket Automaat Nieuwe staat!
+    title: "Mercedes-Benz"
+    vendor_info: Object { name: "Matthew Vigar", company: "Vigar Motors bvba", pro: true, … }
+    address: Object { url: "https://maps.google.com/?q=Duitslandstraat%2011%2C%209140%20Temse%2C%20BE", text: "Duitslandstraat 11,\n9140 Temse, BE" }
+    company: "Vigar Motors bvba"
+    name: "Matthew Vigar"
+    numbers: Array [ "tel:+32470835580", "tel:+32470835480" ]
+    pro: true
+    url: "https://www.autoscout24.fr/offres/mercedes-benz-e-200-cdi-amg-pakket-automaat-nieuwe-staat-diesel-bleu-101acd00-b13e-4eaf-9c1c-7f2b2f56c70f"
+    }*/}
+     {/* create table for cars using above format*/}
+           {responseCars.length > 0 && <table>
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Title</th>
+                        <th>Vendor Info</th>
+                        <th>Address</th>
+                        <th>Company</th>
+                        <th>Name</th>
+                        <th>Numbers</th>
+                        <th>Pro</th>
+                        <th>Url</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {responseCars.map((car, index) => (
+                        <tr key={index}>
+                            <td>{car.data.model}</td>
+                            <td>{car.data.title}</td>
+                            <td>{car.data.vendor_info.name}</td>
+                            <td>{car.data.vendor_info.address.text}</td>
+                            <td>{car.data.vendor_info.company}</td>
+                            <td>{car.data.vendor_info.name}</td>
+                            <td>{car.data.vendor_info.numbers === 'not found' ? "not found":car.data.vendor_info.numbers.join(',')}</td>
+                            <td>{car.data.vendor_info.pro}</td>
+                            <td>{car.url}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>}
+                     
         </div>
     );
 };
