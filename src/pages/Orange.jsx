@@ -4,6 +4,7 @@ const Orange = () => {
     return (
         <div>
             hamza page here 
+            hello hi my dediti toto
             {/* Your component code here */}
         </div>
     );
