@@ -1,59 +1,58 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface RequestDataState {
+  url: string;
+  startPage: number;
+  offers: number;
+  waitingTime: number;
+}
 
 // Interface
 interface AutoScout24State {
-  url: string;
+  requestData: RequestDataState;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any[]; 
+  cars: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  info: any;
   loading: boolean;
   error: string | null;
 }
 
 // Initial state
 const initialState: AutoScout24State = {
-  url: 'https://www.autoscout24.com/lst/?sort=price&desc=0&ustate=N%2CU&size=20&page=1&cy=D&atype=C&',
-  data: [],
+  requestData: {'url':"",'startPage':1,'offers':1,'waitingTime':10},
+  cars: [],
+  info: {},
   loading: false,
   error: null,
 };
-
-// Async thunk for fetching data
-export const fetchData = createAsyncThunk('autoscout24/fetchData', async (url: string) => {
-  try {
-    const response = await axios.get(url);
-    return response.data; // Modify this based on the shape of your fetched data
-  } catch (error) {
-    throw 'An error occurred while fetching data.';
-  }
-});
 
 // Create slice
 const autoscout24Slice = createSlice({
   name: 'autoscout24',
   initialState,
   reducers: {
-    setUrl: (state, action: PayloadAction<string>) => {
-      state.url = action.payload;
+    setRequestData: (state, action: PayloadAction<RequestDataState>) => {
+      state.requestData = action.payload;
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchData.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchData.fulfilled, (state, action) => {
-        state.loading = false;
-        state.data = action.payload;
-      })
-      .addCase(fetchData.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error as string;
-      });
-  },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    addCar: (state, action: PayloadAction<any>) => {
+      state.cars = [...state.cars,action.payload];
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setInfo: (state, action: PayloadAction<any>) => {
+      state.info = action.payload;
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    },
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
+    },
+  }
 });
 
-export const { setUrl } = autoscout24Slice.actions;
+export const { setRequestData,addCar,setError,setInfo,setLoading } = autoscout24Slice.actions;
 
 export default autoscout24Slice.reducer;
