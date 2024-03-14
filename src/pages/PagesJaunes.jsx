@@ -5,7 +5,7 @@ const PagesJaunes = () => {
 
     return (
         <div>
-            abdelah page here
+            my edit
             {/* Your component JSX here */}
         </div>
     );
