@@ -7,12 +7,30 @@ interface RequestDataState {
   waitingTime: number;
 }
 
+interface ProductType {
+  url:string,
+  data:{
+    title: string;
+    model: string;
+  vendor_info: {
+      name: string;
+      numbers: string[] | string;
+      address: {
+        url: string;
+        text: string;
+      },
+      pro: boolean;
+      company: string;
+  }}
+}
+
+
 // Interface
 interface AutoScout24State {
   requestData: RequestDataState;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cars: any[];
+  cars: ProductType[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   info: any;
   loading: boolean;
@@ -37,7 +55,7 @@ const autoscout24Slice = createSlice({
       state.requestData = action.payload;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    addCar: (state, action: PayloadAction<any>) => {
+    addCar: (state, action: PayloadAction<ProductType>) => {
       state.cars = [...state.cars,action.payload];
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
