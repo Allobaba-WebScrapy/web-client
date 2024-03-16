@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RootState } from "@/state/store";
+import { Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
 
 interface ScrapySearchCardProps {
@@ -27,6 +28,7 @@ export function ScrapySearchCar({
   handleSubmit,
 }: React.PropsWithChildren<ScrapySearchCardProps>) {
   const ATError = useSelector((state: RootState) => state.autoscout24.error);
+  const isLoading = useSelector((state: RootState) => state.autoscout24.loading);
   return (
     <Card className="w-[600px]">
       <CardHeader>
@@ -97,9 +99,17 @@ export function ScrapySearchCar({
           </div>
           <div className="flex justify-between mt-4">
             <Button variant="outline" type="reset">
-              reset
+              Reset
             </Button>
+            { isLoading ? 
+            <Button disabled>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Please wait
+          </Button>
+          :
+
             <Button type="submit">Start Scraping</Button>
+            }
           </div>
         </form>
       </CardContent>
