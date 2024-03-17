@@ -28,9 +28,10 @@ const AutoScout24 = () => {
                 startPage: requestData.startPage,
                 offersNumber: requestData.offers,
                 waitingTime: requestData.waitingTime,
+                businessType:requestData.businessType,
             })
             };
-              const response = await fetch('http://localhost:5089/scrape',requestOptions);
+              const response = await fetch('http://localhost:3000/scrape',requestOptions);
               if (!response.ok || !response.body) {
                 throw response.statusText;
               }
@@ -50,14 +51,15 @@ const AutoScout24 = () => {
                 const obj = JSON.parse(decodedChunk)
                 console.log(obj)
                 if(obj.url !== undefined){
-                    if(!uniqueObjects.has(decodedChunk)){
+                    if(!uniqueObjects.includes(decodedChunk)){
                         dispatch(addUniqueObject(decodedChunk))
+                        obj['selected'] = false
                         dispatch(addCar(obj));
                     }else{
                         toast({
                             variant: "destructive",
-                            title: "Uh oh! We found duplicated product.",
-                            description: "we have removed the duplicate product from the list.",
+                            title: "Product is already in the table.",
+                            description: "The duplicate version doesn't added to table!",
                           })
                           console.log("duplicated")
                     }
@@ -89,12 +91,13 @@ const AutoScout24 = () => {
         form_data.startPage  =  parseInt(form_data.startPage as string);
         form_data.offers =  parseInt(form_data.offers as string);
         form_data.waitingTime =  parseInt(form_data.waitingTime as string);
-        console.log(form_data);
+        form_data.businessType =  form_data.businessType as string;
         const RequestData = {
             url: form_data.url,
             startPage: form_data.startPage,
             offers: form_data.offers,
             waitingTime: form_data.waitingTime,
+            businessType:form_data.businessType,
         }
         if(isValidUrl(form_data.url)){
             if(oldRequestData.includes(JSON.stringify(form_data))){
