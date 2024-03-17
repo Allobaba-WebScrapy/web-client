@@ -5,12 +5,14 @@ enableMapSet();
 
 interface RequestDataState {
   url: string;
+  businessType: string;
   startPage: number;
   offers: number;
   waitingTime: number;
 }
 
 interface ProductType {
+  selected: boolean;
   url:string,
   data:{
     title: string;
@@ -36,21 +38,21 @@ interface AutoScout24State {
   info: any;
   loading: boolean;
   error: string | null;
-  uniqueObjects: Set<string>;
+  uniqueObjects: string[];
   dublicateNumbers: string[];
   oldRequests :  string[];
 }
 
 // Initial state
 const initialState: AutoScout24State = {
-  requestData: {'url':"",'startPage':1,'offers':1,'waitingTime':10},
+  requestData: {'url':"",'startPage':1,'offers':1,'waitingTime':10,'businessType':'all'},
   cars: [],
   info: {},
   loading: false,
   error: null,
-  uniqueObjects: new Set<string>(),
+  uniqueObjects: [],
   dublicateNumbers: [],
-  oldRequests: []
+  oldRequests: [],
 };
 
 // Create slice
@@ -76,7 +78,7 @@ const autoscout24Slice = createSlice({
       state.error = action.payload;
     },
     addUniqueObject: (state, action: PayloadAction<string>) => {
-      state.uniqueObjects.add(action.payload);
+      state.uniqueObjects.push(action.payload);
     },
     addOldRequest: (state) => {
       state.oldRequests.push(JSON.stringify(state.requestData));
@@ -85,25 +87,30 @@ const autoscout24Slice = createSlice({
     findDublicateNumbers: (state) => {
         const allNumbers: string[] = [];
         
-        const seenNumbers = new Set<string>();
     
         for (const car of state.cars) {
+          if (typeof car.data.vendor_info.numbers == typeof []) {
             for (const number of car.data.vendor_info.numbers) {
-                if (seenNumbers.has(number)) {
-                    if (!state.dublicateNumbers.includes(number)) {
-                      state.dublicateNumbers.push(number);
-                    }
-                } else {
-                    seenNumbers.add(number);
-                    allNumbers.push(number);
+                if (allNumbers.includes(number)) {
+                  if (!state.dublicateNumbers.includes(number)) {
+                    state.dublicateNumbers.push(number);
+                  }
+                }else{
+                  allNumbers.push(number);
                 }
             }
+          }
         }
+        console.log(allNumbers);
     
+    },
+    updateProductSelectedState: (state, action: PayloadAction<{index:number,value:boolean}>) => {
+      console.log('select update',action.payload.index,action.payload.value)
+      state.cars[action.payload.index].selected = action.payload.value;
     }
   }
 });
 
-export const { setRequestData,addCar,setError,addOldRequest,setInfo,setLoading,addUniqueObject,findDublicateNumbers } = autoscout24Slice.actions;
+export const { setRequestData,updateProductSelectedState,addCar,setError,addOldRequest,setInfo,setLoading,addUniqueObject,findDublicateNumbers } = autoscout24Slice.actions;
 
 export default autoscout24Slice.reducer;
