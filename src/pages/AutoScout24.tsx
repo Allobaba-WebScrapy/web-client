@@ -1,5 +1,7 @@
 import { CarsTable } from "@/components/global/autoscout24/CarsTable";
 import { ScrapySearchCar } from "@/components/global/autoscout24/SearchCard";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/ui/use-toast";
 import { addCar, addOldRequest, addUniqueObject, findDublicateNumbers, setError, setInfo, setLoading, setRequestData } from "@/state/autoscout24/AutoScout24Slice";
 import { AppDispatch, RootState } from "@/state/store";
 import { useEffect } from "react";
@@ -12,6 +14,8 @@ const AutoScout24 = () => {
     const isLoading = useSelector((state: RootState) => state.autoscout24.loading);
     const oldRequestData = useSelector((state: RootState) => state.autoscout24.oldRequests);
     const dispatch = useDispatch<AppDispatch>();
+    const {toast} = useToast()
+    
     useEffect(() => {
         if(!isValidUrl(requestData.url)) return
         const fetchData = async () => {
@@ -26,7 +30,7 @@ const AutoScout24 = () => {
                 waitingTime: requestData.waitingTime,
             })
             };
-              const response = await fetch('http://localhost:3000/scrape',requestOptions);
+              const response = await fetch('http://localhost:5089/scrape',requestOptions);
               if (!response.ok || !response.body) {
                 throw response.statusText;
               }
@@ -50,7 +54,12 @@ const AutoScout24 = () => {
                         dispatch(addUniqueObject(decodedChunk))
                         dispatch(addCar(obj));
                     }else{
-                        console.log('--------duplicate')
+                        toast({
+                            variant: "destructive",
+                            title: "Uh oh! We found duplicated product.",
+                            description: "we have removed the duplicate product from the list.",
+                          })
+                          console.log("duplicated")
                     }
                 }else{
                     dispatch(setInfo(obj));
@@ -115,6 +124,7 @@ const AutoScout24 = () => {
     ,[dispatch, isLoading])
     return (
         <div className="flex flex-col w-full items-center">
+            <Toaster    />
             <div>
             <ScrapySearchCar handleSubmit={handleSubmit} />
             </div>
