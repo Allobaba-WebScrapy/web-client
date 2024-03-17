@@ -1,5 +1,7 @@
 import { CarsTable } from "@/components/global/autoscout24/CarsTable";
 import { ScrapySearchCar } from "@/components/global/autoscout24/SearchCard";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/ui/use-toast";
 import { addCar, addOldRequest, addUniqueObject, findDublicateNumbers, setError, setInfo, setLoading, setRequestData } from "@/state/autoscout24/AutoScout24Slice";
 import { AppDispatch, RootState } from "@/state/store";
 import { useEffect } from "react";
@@ -12,6 +14,8 @@ const AutoScout24 = () => {
     const isLoading = useSelector((state: RootState) => state.autoscout24.loading);
     const oldRequestData = useSelector((state: RootState) => state.autoscout24.oldRequests);
     const dispatch = useDispatch<AppDispatch>();
+    const {toast} = useToast()
+    
     useEffect(() => {
         if(!isValidUrl(requestData.url)) return
         const fetchData = async () => {
@@ -24,6 +28,7 @@ const AutoScout24 = () => {
                 startPage: requestData.startPage,
                 offersNumber: requestData.offers,
                 waitingTime: requestData.waitingTime,
+                businessType:requestData.businessType,
             })
             };
               const response = await fetch('http://localhost:3000/scrape',requestOptions);
@@ -46,11 +51,17 @@ const AutoScout24 = () => {
                 const obj = JSON.parse(decodedChunk)
                 console.log(obj)
                 if(obj.url !== undefined){
-                    if(!uniqueObjects.has(decodedChunk)){
+                    if(!uniqueObjects.includes(decodedChunk)){
                         dispatch(addUniqueObject(decodedChunk))
+                        obj['selected'] = false
                         dispatch(addCar(obj));
                     }else{
-                        console.log('--------duplicate')
+                        toast({
+                            variant: "destructive",
+                            title: "Product is already in the table.",
+                            description: "The duplicate version doesn't added to table!",
+                          })
+                          console.log("duplicated")
                     }
                 }else{
                     dispatch(setInfo(obj));
@@ -80,12 +91,13 @@ const AutoScout24 = () => {
         form_data.startPage  =  parseInt(form_data.startPage as string);
         form_data.offers =  parseInt(form_data.offers as string);
         form_data.waitingTime =  parseInt(form_data.waitingTime as string);
-        console.log(form_data);
+        form_data.businessType =  form_data.businessType as string;
         const RequestData = {
             url: form_data.url,
             startPage: form_data.startPage,
             offers: form_data.offers,
             waitingTime: form_data.waitingTime,
+            businessType:form_data.businessType,
         }
         if(isValidUrl(form_data.url)){
             if(oldRequestData.includes(JSON.stringify(form_data))){
@@ -115,6 +127,7 @@ const AutoScout24 = () => {
     ,[dispatch, isLoading])
     return (
         <div className="flex flex-col w-full items-center">
+            <Toaster    />
             <div>
             <ScrapySearchCar handleSubmit={handleSubmit} />
             </div>

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -28,7 +29,9 @@ export function ScrapySearchCar({
   handleSubmit,
 }: React.PropsWithChildren<ScrapySearchCardProps>) {
   const ATError = useSelector((state: RootState) => state.autoscout24.error);
-  const isLoading = useSelector((state: RootState) => state.autoscout24.loading);
+  const isLoading = useSelector(
+    (state: RootState) => state.autoscout24.loading
+  );
   return (
     <Card className="w-[600px]">
       <CardHeader>
@@ -95,21 +98,36 @@ export function ScrapySearchCar({
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <RadioGroup defaultValue="all" name="businessType" className="flex flex-row gap-4">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="b2b" id="r1" />
+                  <Label htmlFor="r1">B2B</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="b2c" id="r2" />
+                  <Label htmlFor="r2">B2C</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="all" id="r3" />
+                  <Label htmlFor="r3">All</Label>
+                </div>
+              </RadioGroup>
+            </div>
             <span className="text-red-500">{ATError}</span>
           </div>
           <div className="flex justify-between mt-4">
             <Button variant="outline" type="reset">
               Reset
             </Button>
-            { isLoading ? 
-            <Button disabled>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Please wait
-          </Button>
-          :
-
-            <Button type="submit">Start Scraping</Button>
-            }
+            {isLoading ? (
+              <Button disabled>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Please wait
+              </Button>
+            ) : (
+              <Button type="submit">Start Scraping</Button>
+            )}
           </div>
         </form>
       </CardContent>
