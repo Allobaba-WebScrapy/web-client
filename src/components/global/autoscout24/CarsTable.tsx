@@ -10,21 +10,18 @@ import {
 } from "@/components/ui/table";
 import { RootState } from "@/state/store";
 import { Link } from "lucide-react";
-import { useEffect } from "react";
+
 import { useSelector } from "react-redux";
 
 export function CarsTable() {
   const cars = useSelector((state: RootState) => state.autoscout24.cars);
   const data = useSelector((state: RootState) => state.autoscout24.requestData);
+  const dublicateNumbers = useSelector((state:RootState) => state.autoscout24.dublicateNumbers)
+  
   const isLoading = useSelector(
     (state: RootState) => state.autoscout24.loading
   );
-  // test if there is nay repeated number in cars vendor numbers
-  useEffect(() => {
-    if(!isLoading){
-        console.log("test")
-    }}
-    ,[isLoading])
+  
 
   return (
     <Table>
@@ -51,9 +48,8 @@ export function CarsTable() {
             <TableCell className="flex flex-col gap-1">
               {car.data.vendor_info.numbers === "error/product/info-card/numbers/not-found"
                 ? "No Numbers"
-                : car.data.vendor_info.numbers === "error/product/info-card/numbers/request-failed" ? "Get numbers failed":car.data.vendor_info.numbers.length === 0 ? "No Numbers len 0" :car.data.vendor_info.numbers.map((n: string) => (
-                    <p>{
-                      
+                : car.data.vendor_info.numbers === "error/product/info-card/numbers/request-failed" ? "Get numbers failed":car.data.vendor_info.numbers.length === 0 ? "No Numbers len 0" : (car.data.vendor_info.numbers as string[]).map((n: string) => (
+                    <p className={dublicateNumbers.includes(n) ? "bg-red-400":''}>{
                       n
                       }</p>
                   ))}
