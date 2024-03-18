@@ -28,7 +28,7 @@ import AutoScout24 from "./pages/AutoScout24.tsx";
 // Orangge
 import Orange from "./pages/Orange.tsx";
 // PagesJaunes
-import PagesJaunes from "./pages/PagesJaunes.tsx";
+import PagesJaunes from "./pages/PagesJaunes.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
