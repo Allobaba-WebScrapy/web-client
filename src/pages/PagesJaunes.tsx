@@ -1,33 +1,34 @@
-import { useState } from "react";
-import FilterOptions from "../components/global/pagesJaunes/FilterOptions";
+import React, { useState } from "react";
+import FilterOptions from "@/components/global/pagesJaunes/FilterOptions";
 import { processUrls } from "@/lib/handleUrlFunctions";
 
-const PagesJaunes = () => {
-  const [cards, setCards] = useState([
-    // {
-    //   card_id: "01516259",
-    //   card_url: "https://www.pagesjaunes.fr/pros/01516259#zoneHoraires",
-    //   info: {
-    //     title: "OFPPT",
-    //     activite: "MSMN",
-    //     adress: "SYBA, Douar Dlam",
-    //     phone: "0909090009",
-    //   },
-    // },
-  ]);
-  const [error, setError] = useState({ error: false, message: "" });
-  const [baseUrl, setBaseUrl] = useState({
+interface CardInfo {
+  title: string;
+  activite: string;
+  adress: string;
+  phone: string[];
+}
+
+interface Card {
+  card_id: string;
+  card_url: string;
+  info: CardInfo;
+}
+
+const PagesJaunes: React.FC = () => {
+  const [cards, setCards] = useState<Card[]>([]);
+  const [error, setError] = useState<{ error: boolean; message: string }>({
+    error: false,
+    message: "",
+  });
+  const [baseUrl, setBaseUrl] = useState<{ url: string; filters: any }>({
     url: "",
     filters: {},
   });
-  let setfileName = crypto.randomUUID();
-  const [fileName, setFileName] = useState("KAMADO-" + setfileName);
-  const [download, setDownload] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
+  const [download, setDownload] = useState<boolean>(false);
+  const [showFilters, setShowFilters] = useState<boolean>(false);
 
-  //! ---------------------- Scrape the data ----------------------
-  const scrape = async (client_urls) => {
-    // Send the URLs to the server with fetch
+  const scrape = async (client_urls: any[]) => {
     fetch("http://localhost:3040/setup", {
       method: "POST",
       headers: {
@@ -35,31 +36,22 @@ const PagesJaunes = () => {
       },
       body: JSON.stringify({
         client_urls: client_urls,
-        fileName: fileName || "data",
       }),
     })
-      .then((response) => {
-        // Start the EventSource connection
+      .then(() => {
         const eventSource = new EventSource("http://localhost:3040/stream");
 
-        eventSource.addEventListener("done", function (event) {
-          // Close the connection when the 'done' event is received
+        eventSource.addEventListener("done", function () {
           setDownload(true);
-          console.log("Received done event, closing connection.");
           eventSource.close();
         });
 
-        // Listen for the 'error' event
-        eventSource.addEventListener(
-          "failedVerification",
-          function (event) {
-            setError({ error: true, message: "Verification error" });
-            const data = JSON.parse(event.data);
-            console.error("Verification error", data);
-            eventSource.close();
-          },
-          false
-        );
+        eventSource.addEventListener("failedVerification", function (event) {
+          setError({ error: true, message: "Verification error" });
+          const data = JSON.parse(event.data);
+          console.error("Verification error", data);
+          eventSource.close();
+        });
 
         eventSource.onmessage = function (event) {
           setError({ error: false, message: "" });
@@ -76,44 +68,15 @@ const PagesJaunes = () => {
       .catch((error) => {
         setError({ error: true, message: "Connection Error" });
         console.error("Error:", error);
-        eventSource.close();
       });
   };
 
-  //! ---------------------- Download the CSV file ----------------------
-  const downloadCsv = () => {
-    fetch(`http://localhost:3040/download_csv?name_csv=${fileName}`)
-      .then((response) => {
-        // The API call was successful!
-        return response.blob();
-      })
-      .then((blob) => {
-        // Create an object URL for the blob
-        const url = window.URL.createObjectURL(blob);
-        // Create a new anchor element
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "data.csv";
-        // Append the anchor element to the document body
-        document.body.appendChild(a);
-        // Start the download
-        a.click();
-        // Clean-up
-        document.body.removeChild(a);
-      })
-      .catch((error) => {
-        // The API call failed
-        console.error("Error:", error);
-      });
-  };
 
-  //! ---------------------- Handle the filter state ----------------------
-  const onFiltersSubmit = (filters) => {
+  const onFiltersSubmit = (filters: any) => {
     setBaseUrl({ ...baseUrl, filters: filters });
   };
 
-  //! ---------------------- Submit ------------------------
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!baseUrl.url) {
       console.log("URL is required");
@@ -122,7 +85,6 @@ const PagesJaunes = () => {
       console.log("URL must be from pagesjaunes.fr");
       return;
     }
-    // Do something with the URL and other input values, like sending them to an API
     const urls = [
       {
         url: baseUrl.url,
@@ -136,29 +98,24 @@ const PagesJaunes = () => {
     ];
     console.log(processUrls(urls));
     scrape(processUrls(urls));
-    // setBaseUrl({ url: "", filters: {} });
   };
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen h-full py-10 bg-gray-800">
       <div className="bg-gray-700 shadow-md rounded px-8 pt-6 pb-8 mb-4 w-2/3 h-auto">
         <div className="mb-4">
-          <label
-            className="block text-gray-300 text-sm font-bold mb-2"
-            htmlFor="url"
-          >
+          <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="url">
             URL
           </label>
           <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" // Add the dark mode class
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="url"
             type="text"
-            value={baseUrl.url} // Use the url value from state
+            value={baseUrl.url}
             onChange={(e) => setBaseUrl({ ...baseUrl, url: e.target.value })}
             placeholder="Enter URL"
           />
         </div>
-        {/*//! --------------------------------------------------------------- */}
         <div className="filters">
           <h4
             onClick={() => setShowFilters((prev) => !prev)}
@@ -167,13 +124,9 @@ const PagesJaunes = () => {
             FILTERS
           </h4>
           <div className={showFilters ? "block" : "hidden"}>
-            <FilterOptions
-              onFiltersSubmit={onFiltersSubmit}
-              url={baseUrl.url}
-            />
+            <FilterOptions onFiltersSubmit={onFiltersSubmit} url={baseUrl.url} />
           </div>
         </div>
-        {/*//! --------------------------------------------------------------- */}
         <div className="my-4">
           <button
             onClick={handleSubmit}
@@ -185,9 +138,7 @@ const PagesJaunes = () => {
         </div>
       </div>
       {error.error ? (
-        <div className="bg-red-500 text-white font-bold py-2 px-4 rounded">
-          {error.message}
-        </div>
+        <div className="bg-red-500 text-white font-bold py-2 px-4 rounded">{error.message}</div>
       ) : (
         cards.length > 0 && (
           <>
@@ -203,19 +154,13 @@ const PagesJaunes = () => {
               </thead>
               <tbody>
                 {cards.map((card, index) => (
-                  <tr
-                    key={card.card_id + index}
-                    className="border-t-2 border-zinc-100"
-                  >
+                  <tr key={card.card_id + index} className="border-t-2 border-zinc-100">
                     <td className="px-4 py-5">{card.info.title}</td>
                     <td className="px-4 py-5">{card.info.activite}</td>
                     <td className="px-4 py-5">{card.info.adress}</td>
                     <td className="">
                       {card.info.phone.map((phone, index) => (
-                        <div
-                          className="px-3 py-2 bg-neutral-900 rounded my-2"
-                          key={phone}
-                        >
+                        <div className="px-3 py-2 bg-neutral-900 rounded my-2" key={index}>
                           {phone}
                         </div>
                       ))}
@@ -237,7 +182,7 @@ const PagesJaunes = () => {
               {download && (
                 <button
                   className="inline-block w-32 py-3 bg-green-500 rounded text-white font-semibold"
-                  onClick={downloadCsv}
+                  onClick={() => setDownload(false)}
                 >
                   Download CSV
                 </button>
