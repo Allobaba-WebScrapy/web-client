@@ -1,7 +1,19 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const FilterOptions = ({ onFiltersSubmit, url }) => {
-  const [state, setState] = useState({
+interface FilterOptionsProps {
+  onFiltersSubmit: (filters: State) => void;
+  url: string;
+}
+
+interface State {
+  startPage: string;
+  sortOption: string;
+  limit: string;
+  genre: string;
+}
+
+const FilterOptions: React.FC<FilterOptionsProps> = ({ onFiltersSubmit, url }) => {
+  const [state, setState] = useState<State>({
     startPage: "",
     sortOption: "",
     limit: "1",
@@ -18,10 +30,10 @@ const FilterOptions = ({ onFiltersSubmit, url }) => {
           "PERTINENCE-ASC",
           "NOTE_GLOBALE-DESC",
           "NOMBRE_GLOBAL_AVIS-DESC",
-        ].includes(params.get("tri")) &&
+        ].includes(params.get("tri") || "") &&
           params.get("tri")) ||
         "PERTINENCE-ASC";
-      let newState = {
+      let newState: State = {
         ...state,
         startPage: page,
         sortOption: sortOption,
@@ -31,20 +43,14 @@ const FilterOptions = ({ onFiltersSubmit, url }) => {
     }
   }, [url]);
 
-  const handleFormChange = (e) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    let newState = { ...state, [name]: value };
-    if (!newState.startPage || newState.startPage < 1) {
+    let newState: State = { ...state, [name]: value };
+    if (name === "startPage" && (!newState.startPage || parseInt(newState.startPage) < 1)) {
       newState.startPage = "1";
     }
-    if (!newState.sortOption) {
-      newState.sortOption = "PERTINENCE-ASC";
-    }
-    if (!newState.limit || newState.limit < 1) {
+    if (name === "limit" && (!newState.limit || parseInt(newState.limit) < 1)) {
       newState.limit = "1";
-    }
-    if (!newState.genre) {
-      newState.genre = "B2B";
     }
     setState(newState);
     onFiltersSubmit(newState);

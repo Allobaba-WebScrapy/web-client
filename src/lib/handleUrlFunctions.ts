@@ -1,21 +1,21 @@
 /**
  * Converts a base URL into a perfect URL based on specific conditions.
- * @param {string} base_url - The base URL to be converted.
- * @returns {string} - The perfect URL.
+ * @param base_url - The base URL to be converted.
+ * @returns The perfect URL.
  */
-export function makePerfectUrl(base_url) {
+export function makePerfectUrl(base_url: string): string {
   const parsed_url = new URL(base_url);
-  let perfect_url;
+  let perfect_url: string;
 
   if (parsed_url.pathname === "/annuaire/chercherlespros") {
     const query_params = new URLSearchParams(parsed_url.search);
-    const preserved_params = {};
+    const preserved_params: { [key: string]: string[] } = {};
     for (let key of query_params.keys()) {
       if (["quoiqui", "ou", "tri", "page"].includes(key)) {
         preserved_params[key] = query_params.getAll(key);
       }
     }
-    parsed_url.search = new URLSearchParams(preserved_params).toString();
+    parsed_url.search = new URLSearchParams(preserved_params as any).toString();
     perfect_url = parsed_url.toString();
   } else {
     const path_parts = parsed_url.pathname.split("/");
@@ -28,7 +28,7 @@ export function makePerfectUrl(base_url) {
       ou: city ? [city] : ["paris-75"],
     };
     parsed_url.pathname = "/annuaire/chercherlespros";
-    parsed_url.search = new URLSearchParams(query_params).toString();
+    parsed_url.search = new URLSearchParams(query_params as any).toString();
     perfect_url = parsed_url.toString();
   }
 
@@ -37,11 +37,14 @@ export function makePerfectUrl(base_url) {
 
 /**
  * Adds query parameters to a base URL.
- * @param {string} base_url - The base URL to which the query parameters will be added.
- * @param {Object} params - The query parameters to be added.
- * @returns {string} - The updated URL with added query parameters.
+ * @param base_url - The base URL to which the query parameters will be added.
+ * @param params - The query parameters to be added.
+ * @returns The updated URL with added query parameters.
  */
-export function addArgumentsToUrl(base_url, params) {
+export function addArgumentsToUrl(
+  base_url: string,
+  params: { [key: string]: string }
+): string {
   const parsed_url = new URL(base_url);
   const query_params = new URLSearchParams(parsed_url.search);
   for (let key in params) {
@@ -53,17 +56,34 @@ export function addArgumentsToUrl(base_url, params) {
 
 /**
  * Processes an array of base URLs and returns an array of updated URLs with query parameters.
- * @param {Array} baseUrls - An array of base URLs to be processed.
- * @returns {Array} - An array of updated URLs with query parameters.
+ * @param baseUrls - An array of base URLs to be processed.
+ * @returns An array of updated URLs with query parameters.
  */
-export function processUrls(urls) {
-  const updatedUrls = [];
-  for (let item of urls) {
+export function processUrls(
+  baseUrls: {
+    url: string;
+    params?: { [key: string]: string };
+    limit?: string;
+    genre?: string;
+  }[]
+): {
+  url: string;
+  "start-limit": string;
+  "end-limit": string;
+  genre: string;
+}[] {
+  const updatedUrls: {
+    url: string;
+    "start-limit": string;
+    "end-limit": string;
+    genre: string;
+  }[] = [];
+  for (let item of baseUrls) {
     const url = item.url;
     const params = item.params || {};
-    const page = params.page || 1;
+    const page = params.page || "1";
     const tri = params.tri || "PERTINENCE-ASC";
-    const limit = item.limit || 1;
+    const limit = item.limit || "1";
     const genre = item.genre || "B2B";
     try {
       let perfectUrl = makePerfectUrl(url);
@@ -83,5 +103,7 @@ export function processUrls(urls) {
       console.error("Error:", e);
     }
   }
-  return Array.from(new Set(updatedUrls.map(JSON.stringify))).map(JSON.parse);
+  return Array.from(new Set(updatedUrls.map(JSON.stringify as any))).map(
+    JSON.parse as any
+  );
 }
