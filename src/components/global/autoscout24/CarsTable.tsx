@@ -6,13 +6,14 @@ import {
   TableBody,
   TableCaption,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { updateProductSelectedState } from "@/state/autoscout24/AutoScout24Slice";
+import { removeSelectedProducts, updateProductSelectedState } from "@/state/autoscout24/AutoScout24Slice";
 import { AppDispatch, RootState } from "@/state/store";
-import { Link } from "lucide-react";
+import { CheckSquare, Link, RotateCcw, Trash2 } from "lucide-react";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -26,14 +27,11 @@ export function CarsTable() {
   const isLoading = useSelector(
     (state: RootState) => state.autoscout24.loading
   );
-  const setAllcheckbox = (value:boolean) => {
+  const setAllcheckbox = (value: boolean) => {
     for (let i = 0; i < cars.length; i++) {
-      dispatch(
-        updateProductSelectedState({ index: i, value: value })
-      )
+      dispatch(updateProductSelectedState({ index: i, value: value }));
     }
-    
-  }
+  };
 
   return (
     <Table>
@@ -42,16 +40,15 @@ export function CarsTable() {
         <TableRow>
           <TableHead className="w-[100px]">
             <div className="flex gap-1">
-
-            <Button onClick={()=>setAllcheckbox(true)}>Select</Button>
-            <Button onClick={()=>setAllcheckbox(false)}>Deselect</Button>
+              <Button onClick={() => setAllcheckbox(true)} ><CheckSquare className=""/></Button>
+              <Button onClick={() => setAllcheckbox(false)}><RotateCcw/></Button>
             </div>
           </TableHead>
           <TableHead className="w-[100px]">Model</TableHead>
           <TableHead>Title</TableHead>
           <TableHead>Company</TableHead>
           <TableHead>Vendor Name</TableHead>
-          <TableHead >Numbers</TableHead>
+          <TableHead>Numbers</TableHead>
           <TableHead>Adress</TableHead>
           <TableHead>IsPro</TableHead>
           <TableHead className="text-right">Link</TableHead>
@@ -65,7 +62,7 @@ export function CarsTable() {
               <Checkbox
                 id="terms"
                 checked={car.selected}
-                className="w-8 h-8 m-0 p-0 space-y-0 space-x-0" 
+                className="w-8 h-8 m-0 p-0 space-y-0 space-x-0"
                 onClick={() =>
                   dispatch(
                     updateProductSelectedState({ index, value: !car.selected })
@@ -100,7 +97,6 @@ export function CarsTable() {
                         key={i}
                       >
                         <a href={`tel:${n}`}>{n}</a>
-
                       </p>
                     )
                   )}
@@ -154,6 +150,14 @@ export function CarsTable() {
           </>
         )}
       </TableBody>
+      <TableFooter>
+        <TableRow>
+          <TableCell colSpan={3}>
+            <Button onClick={()=>{dispatch(removeSelectedProducts())}}><Trash2 /></Button>
+          </TableCell>
+          {/* <TableCell className="text-right">$2,500.00</TableCell> */}
+        </TableRow>
+      </TableFooter>
     </Table>
   );
 }
