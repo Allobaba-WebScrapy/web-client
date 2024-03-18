@@ -107,10 +107,13 @@ const autoscout24Slice = createSlice({
     updateProductSelectedState: (state, action: PayloadAction<{index:number,value:boolean}>) => {
       console.log('select update',action.payload.index,action.payload.value)
       state.cars[action.payload.index].selected = action.payload.value;
+    },
+    removeSelectedProducts: (state) => {
+      state.cars = state.cars.filter((car) => !car.selected); 
     }
   }
 });
 
-export const { setRequestData,updateProductSelectedState,addCar,setError,addOldRequest,setInfo,setLoading,addUniqueObject,findDublicateNumbers } = autoscout24Slice.actions;
+export const { setRequestData,removeSelectedProducts,updateProductSelectedState,addCar,setError,addOldRequest,setInfo,setLoading,addUniqueObject,findDublicateNumbers } = autoscout24Slice.actions;
 
 export default autoscout24Slice.reducer;
