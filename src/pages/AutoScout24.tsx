@@ -1,151 +1,183 @@
 import { CarsTable } from "@/components/global/autoscout24/CarsTable";
+import InfoCard from "@/components/global/autoscout24/InfoCard";
 import { ScrapySearchCar } from "@/components/global/autoscout24/SearchCard";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
-import { addCar, addOldRequest, addUniqueObject, findDublicateNumbers, setError, setInfo, setLoading, setRequestData } from "@/state/autoscout24/AutoScout24Slice";
+import {
+  addCar,
+  addOldRequest,
+  addUniqueObject,
+  findDublicateNumbers,
+  setError,
+  setInfo,
+  setLoading,
+  setRequestData,
+  setRequestState,
+} from "@/state/autoscout24/AutoScout24Slice";
 import { AppDispatch, RootState } from "@/state/store";
 import { useEffect } from "react";
 
-import { useSelector ,useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 const AutoScout24 = () => {
-    const requestData = useSelector((state: RootState) => state.autoscout24.requestData);
-    const uniqueObjects = useSelector((state: RootState) => state.autoscout24.uniqueObjects);
-    const isLoading = useSelector((state: RootState) => state.autoscout24.loading);
-    const oldRequestData = useSelector((state: RootState) => state.autoscout24.oldRequests);
-    const dispatch = useDispatch<AppDispatch>();
-    const {toast} = useToast()
-    
-    useEffect(() => {
-        if(!isValidUrl(requestData.url)) return
-        const fetchData = async () => {
-            try {
-              dispatch(setLoading(true))
-              const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: requestData.url,
-                startPage: requestData.startPage,
-                offersNumber: requestData.offers,
-                waitingTime: requestData.waitingTime,
-                businessType:requestData.businessType,
-            })
-            };
-              const response = await fetch('http://localhost:3000/scrape',requestOptions);
-              if (!response.ok || !response.body) {
-                throw response.statusText;
-              }
-       
-              const reader = response.body.getReader();
-              const decoder = new TextDecoder();
-       
-              // eslint-disable-next-line no-constant-condition
-              while (true) {
-                const { value, done } = await reader.read();
-                if (done) {
-                    dispatch(setLoading(false));
-                    break;
-                }
-       
-                const decodedChunk = decoder.decode(value, { stream: true });
-                const obj = JSON.parse(decodedChunk)
-                console.log(obj)
-                if(obj.url !== undefined){
-                    if(!uniqueObjects.includes(decodedChunk)){
-                        dispatch(addUniqueObject(decodedChunk))
-                        obj['selected'] = false
-                        dispatch(addCar(obj));
-                    }else{
-                        toast({
-                            variant: "destructive",
-                            title: "Product is already in the table.",
-                            description: "The duplicate version doesn't added to table!",
-                          })
-                          console.log("duplicated")
-                    }
-                }else if(obj.error){
-                    dispatch(setError(obj.error))
-                    toast({
-                        variant: "destructive",
-                        title: "Request blocked.",
-                        description: obj.error ,
-                      })
-                    console.log(obj.error)
-                    setLoading(false)
-                }
-                else{
-                    dispatch(setInfo(obj));
-                }
-              }
-            } catch (error) {
-                console.log(error)
-                dispatch(setLoading(false));
-              // add later the other errors
-            }
-          };
+  const requestData = useSelector(
+    (state: RootState) => state.autoscout24.requestData
+  );
+  const uniqueObjects = useSelector(
+    (state: RootState) => state.autoscout24.uniqueObjects
+  );
+  const isLoading = useSelector(
+    (state: RootState) => state.autoscout24.loading
+  );
+  const oldRequestData = useSelector(
+    (state: RootState) => state.autoscout24.oldRequests
+  );
+  const dispatch = useDispatch<AppDispatch>();
+  const { toast } = useToast();
 
-          fetchData()
-       
-          
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [requestData]);
-    const isValidUrl = (url: string) => {
-        return url.trim().startsWith('https://www.autoscout24.fr/lst')
-    }
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        dispatch(setError(null))
-
-        const form_data:{[k:string]: string |number |FormDataEntryValue} = Object.fromEntries(new FormData(e.currentTarget));
-        form_data.url = form_data.url as string; 
-        form_data.startPage  =  parseInt(form_data.startPage as string);
-        form_data.offers =  parseInt(form_data.offers as string);
-        form_data.waitingTime =  parseInt(form_data.waitingTime as string);
-        form_data.businessType =  form_data.businessType as string;
-        const RequestData = {
-            url: form_data.url,
-            startPage: form_data.startPage,
-            offers: form_data.offers,
-            waitingTime: form_data.waitingTime,
-            businessType:form_data.businessType,
-        }
-        if(isValidUrl(form_data.url)){
-            if(oldRequestData.includes(JSON.stringify(form_data))){
-                const confirm = window.confirm('You have already scraped this url! Do you want to continue?');
-                if (confirm) {
-                    dispatch(setRequestData(RequestData));
-                }else{
-                    
-                    return
-                }
-            }else{
-                dispatch(setRequestData(RequestData));
-                dispatch(addOldRequest());
-            }
-        }else{
-            dispatch(setError('URL should start with https://www.autoscout24.fr/lst'))
-        }
-        console.log(form_data);
-        console.log(oldRequestData);
-    }
-    // test if there is nay repeated number in cars vendor numbers
   useEffect(() => {
-    if(!isLoading){
-        console.log("test")
-        dispatch(findDublicateNumbers())
-    }}
-    ,[dispatch, isLoading])
-    return (
-        <div className="flex flex-col w-full items-center">
-            <Toaster    />
-            <div>
-            <ScrapySearchCar handleSubmit={handleSubmit} />
-            </div>
-        <div>
-            <CarsTable />
-        </div>
-        </div>
-    )
+    if (!isValidUrl(requestData.url)) return;
+    const fetchData = async () => {
+      try {
+        dispatch(setLoading(true));
+        const requestOptions = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            url: requestData.url,
+            startPage: requestData.startPage,
+            offersNumber: requestData.offers,
+            waitingTime: requestData.waitingTime,
+            businessType: requestData.businessType,
+          }),
+        };
+        const response = await fetch(
+          "http://localhost:3000/scrape",
+          requestOptions
+        );
+        if (!response.ok || !response.body) {
+          throw response.statusText;
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) {
+            dispatch(setLoading(false));
+            break;
+          }
+
+          const decodedChunk = decoder.decode(value, { stream: true });
+          const obj = JSON.parse(decodedChunk);
+          console.log(obj);
+          if (obj.url !== undefined) {
+            if (!uniqueObjects.includes(decodedChunk)) {
+              dispatch(addUniqueObject(decodedChunk));
+              obj["selected"] = false;
+              dispatch(addCar(obj));
+            } else {
+              toast({
+                variant: "destructive",
+                title: "Product is already in the table.",
+                description: "The duplicate version doesn't added to table!",
+              });
+              console.log("duplicated");
+            }
+          } else if (obj.error) {
+            dispatch(setError(obj.error));
+            toast({
+              variant: "destructive",
+              title: "Request blocked.",
+              description: obj.error,
+            });
+            console.log(obj.error);
+            setLoading(false);
+          } else if (obj.type === "result_info") {
+            dispatch(setInfo(obj.data));
+          } else if (obj.type === "progress") {
+            dispatch(setRequestState(obj.data.message));
+          }
+        }
+      } catch (error) {
+        console.log(error);
+        dispatch(setLoading(false));
+        // add later the other errors
+      }
+    };
+
+    fetchData();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestData]);
+  const isValidUrl = (url: string) => {
+    return url.trim().startsWith("https://www.autoscout24.fr/lst");
+  };
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch(setError(null));
+
+    const form_data: { [k: string]: string | number | FormDataEntryValue } =
+      Object.fromEntries(new FormData(e.currentTarget));
+    form_data.url = form_data.url as string;
+    form_data.startPage = parseInt(form_data.startPage as string);
+    form_data.offers = parseInt(form_data.offers as string);
+    form_data.waitingTime = parseInt(form_data.waitingTime as string);
+    form_data.businessType = form_data.businessType as string;
+    const RequestData = {
+      url: form_data.url,
+      startPage: form_data.startPage,
+      offers: form_data.offers,
+      waitingTime: form_data.waitingTime,
+      businessType: form_data.businessType,
+    };
+    if (isValidUrl(form_data.url)) {
+      if (oldRequestData.includes(JSON.stringify(form_data))) {
+        const confirm = window.confirm(
+          "You have already scraped this url! Do you want to continue?"
+        );
+        if (confirm) {
+          dispatch(setRequestData(RequestData));
+        } else {
+          return;
+        }
+      } else {
+        dispatch(setRequestData(RequestData));
+        dispatch(addOldRequest());
+      }
+    } else {
+      dispatch(
+        setError("URL should start with https://www.autoscout24.fr/lst")
+      );
+    }
+    console.log(form_data);
+    console.log(oldRequestData);
+  };
+  // test if there is nay repeated number in cars vendor numbers
+  useEffect(() => {
+    if (!isLoading) {
+      console.log("test");
+      dispatch(findDublicateNumbers());
+    }
+  }, [dispatch, isLoading]);
+  return (
+    <div className="flex flex-col w-full items-center ">
+      <Toaster />
+      <div className="flex gap-2 w-full h-fit justify-center">
+      <div >
+        <ScrapySearchCar handleSubmit={handleSubmit} />
+      </div>
+      <div className="bg-red-100">
+        <InfoCard />
+      </div>
+      </div>
+      <div>
+        <CarsTable />
+      </div>
+    </div>
+  );
 };
 
 export default AutoScout24;

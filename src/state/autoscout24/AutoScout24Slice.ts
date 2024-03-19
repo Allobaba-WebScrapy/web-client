@@ -29,30 +29,46 @@ interface ProductType {
   }}
 }
 
+interface infoState {
+  num_of_pages:number;
+  num_of_offers:number;
+  start_from_page: number;
+  end_in_page: number;
+  pages_url:string[];
+  offers_got:number; 
+  errors_list:string[];
+  offers_user_want:number;
+}
 
 // Interface
 interface AutoScout24State {
   requestData: RequestDataState;
   cars: ProductType[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  info: any;
+  info: infoState;
   loading: boolean;
   error: string | null;
   uniqueObjects: string[];
   dublicateNumbers: string[];
   oldRequests :  string[];
+  requestState: string;
+  sumProductRequested: number;
+  productsNumBeforeLastRequest: number;
 }
 
 // Initial state
 const initialState: AutoScout24State = {
   requestData: {'url':"",'startPage':1,'offers':1,'waitingTime':10,'businessType':'all'},
   cars: [],
-  info: {},
+  info: { num_of_pages:0,num_of_offers:0,start_from_page:0,end_in_page:0,pages_url:[],offers_got:0,errors_list:[],offers_user_want:0},
   loading: false,
   error: null,
   uniqueObjects: [],
   dublicateNumbers: [],
   oldRequests: [],
+  requestState:'sending request',
+  sumProductRequested: 0,
+  productsNumBeforeLastRequest:0,
 };
 
 // Create slice
@@ -62,13 +78,19 @@ const autoscout24Slice = createSlice({
   reducers: {
     setRequestData: (state, action: PayloadAction<RequestDataState>) => {
       state.requestData = action.payload;
+      state.productsNumBeforeLastRequest = state.cars.length;
+      state.sumProductRequested = state.cars.length + action.payload.offers;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addCar: (state, action: PayloadAction<ProductType>) => {
       state.cars = [...state.cars,action.payload];
     },
+    setRequestState: (state, action: PayloadAction<string>) => {
+      state.requestState = action.payload;
+    }
+    ,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setInfo: (state, action: PayloadAction<any>) => {
+    setInfo: (state, action: PayloadAction<infoState>) => {
       state.info = action.payload;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
@@ -140,6 +162,6 @@ const autoscout24Slice = createSlice({
   }
 });
 
-export const { setRequestData,sortProducts,removeSelectedProducts,updateProductSelectedState,addCar,setError,addOldRequest,setInfo,setLoading,addUniqueObject,findDublicateNumbers } = autoscout24Slice.actions;
+export const { setRequestData,setRequestState,sortProducts,removeSelectedProducts,updateProductSelectedState,addCar,setError,addOldRequest,setInfo,setLoading,addUniqueObject,findDublicateNumbers } = autoscout24Slice.actions;
 
 export default autoscout24Slice.reducer;
