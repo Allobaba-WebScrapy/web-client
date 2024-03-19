@@ -37,9 +37,9 @@ export function ScrapySearchCar({
       <CardHeader>
         <CardTitle>Let's get some data</CardTitle>
         <CardDescription>
-          1-Go to page page that you want to scrape in Autoscout24.fr <br />
-          2-copy link that you awnt to scrape <br />
-          3-link should start with https://www.autoscout24.fr/lst?
+          1-open https://www.autoscout24.fr/lst? <br />
+          2-make your fileter <br />
+          3-copy url
           <br />
         </CardDescription>
       </CardHeader>
@@ -54,6 +54,7 @@ export function ScrapySearchCar({
                 placeholder="Paste URL Here"
                 required
               />
+              
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="startPage">Start page</Label>

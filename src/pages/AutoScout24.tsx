@@ -63,7 +63,17 @@ const AutoScout24 = () => {
                           })
                           console.log("duplicated")
                     }
-                }else{
+                }else if(obj.error){
+                    dispatch(setError(obj.error))
+                    toast({
+                        variant: "destructive",
+                        title: "Request blocked.",
+                        description: obj.error ,
+                      })
+                    console.log(obj.error)
+                    setLoading(false)
+                }
+                else{
                     dispatch(setInfo(obj));
                 }
               }
@@ -113,7 +123,7 @@ const AutoScout24 = () => {
                 dispatch(addOldRequest());
             }
         }else{
-            dispatch(setError('Invalid url'))
+            dispatch(setError('URL should start with https://www.autoscout24.fr/lst'))
         }
         console.log(form_data);
         console.log(oldRequestData);

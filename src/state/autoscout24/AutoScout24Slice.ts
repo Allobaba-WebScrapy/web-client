@@ -86,8 +86,7 @@ const autoscout24Slice = createSlice({
     ,
     findDublicateNumbers: (state) => {
         const allNumbers: string[] = [];
-        
-    
+        state.dublicateNumbers = []
         for (const car of state.cars) {
           if (typeof car.data.vendor_info.numbers == typeof []) {
             for (const number of car.data.vendor_info.numbers) {
@@ -110,10 +109,37 @@ const autoscout24Slice = createSlice({
     },
     removeSelectedProducts: (state) => {
       state.cars = state.cars.filter((car) => !car.selected); 
+    },
+    sortProducts: (state,action:PayloadAction<string>) => {
+      switch (action.payload) {
+        case 'title':
+          state.cars = state.cars.sort((a, b) => a.data.title.localeCompare(b.data.title));
+          break;
+        case 'model':
+          state.cars = state.cars.sort((a, b) => a.data.model.localeCompare(b.data.model));
+          break;
+        case 'vendor':
+          state.cars = state.cars.sort((a, b) => a.data.vendor_info.name.localeCompare(b.data.vendor_info.name));
+          break;
+        case 'company':
+          state.cars = state.cars.sort((a, b) => a.data.vendor_info.company.localeCompare(b.data.vendor_info.company));
+          break;
+        case 'numbers':
+          state.cars = state.cars.sort((a, b) => a.data.vendor_info.numbers[0].localeCompare(b.data.vendor_info.numbers[0]));
+          break;
+        case 'address':
+          state.cars = state.cars.sort((a, b) => a.data.vendor_info.address.text.localeCompare(b.data.vendor_info.address.text));
+          break;
+        case 'pro':
+          state.cars = state.cars.sort((a, b) => a.data.vendor_info.pro.toString().localeCompare(b.data.vendor_info.pro.toString()));
+          break;
+        default:
+          break;
+      }
     }
   }
 });
 
-export const { setRequestData,removeSelectedProducts,updateProductSelectedState,addCar,setError,addOldRequest,setInfo,setLoading,addUniqueObject,findDublicateNumbers } = autoscout24Slice.actions;
+export const { setRequestData,sortProducts,removeSelectedProducts,updateProductSelectedState,addCar,setError,addOldRequest,setInfo,setLoading,addUniqueObject,findDublicateNumbers } = autoscout24Slice.actions;
 
 export default autoscout24Slice.reducer;
