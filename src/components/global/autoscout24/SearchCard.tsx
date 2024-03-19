@@ -69,17 +69,15 @@ export function ScrapySearchCar({
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="offers">Offers Number</Label>
-              <Select name="offers" required>
-                <SelectTrigger id="offers">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  <SelectItem value="19">19</SelectItem>
-                  <SelectItem value="38">38</SelectItem>
-                  <SelectItem value="57">57</SelectItem>
-                  <SelectItem value="76">76</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input
+                id="offers"
+                min={1}
+                max={100}
+                name="offers"
+                placeholder="Start scraping from (1 to 100)"
+                required
+              />
+              
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="waitingTime">
