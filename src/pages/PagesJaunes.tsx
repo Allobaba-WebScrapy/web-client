@@ -81,7 +81,7 @@ const PagesJaunes: React.FC = () => {
     if (!baseUrl.url) {
       console.log("URL is required");
       return;
-    } else if (!baseUrl.url.includes("https://www.pagesjaunes.fr/annuaire")) {
+    } else if (!baseUrl.url.startsWith("https://www.pagesjaunes.fr/annuaire")) {
       console.log("URL must be from pagesjaunes.fr");
       return;
     }
