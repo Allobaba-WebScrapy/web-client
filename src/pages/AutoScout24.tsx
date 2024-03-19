@@ -113,7 +113,7 @@ const AutoScout24 = () => {
                 dispatch(addOldRequest());
             }
         }else{
-            dispatch(setError('Invalid url'))
+            dispatch(setError('URL should start with https://www.autoscout24.fr/lst'))
         }
         console.log(form_data);
         console.log(oldRequestData);
