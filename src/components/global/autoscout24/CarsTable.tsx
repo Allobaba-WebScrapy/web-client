@@ -11,9 +11,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { removeSelectedProducts, updateProductSelectedState } from "@/state/autoscout24/AutoScout24Slice";
+import {
+  findDublicateNumbers,
+  removeSelectedProducts,
+  sortProducts,
+  updateProductSelectedState,
+} from "@/state/autoscout24/AutoScout24Slice";
 import { AppDispatch, RootState } from "@/state/store";
-import { CheckSquare, Link, RotateCcw, Trash2 } from "lucide-react";
+import {
+  ArrowDownAZ,
+  ArrowUpRightFromSquare,
+  CheckSquare,
+  Square,
+  Trash2,
+} from "lucide-react";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -32,25 +43,75 @@ export function CarsTable() {
       dispatch(updateProductSelectedState({ index: i, value: value }));
     }
   };
+  const handleDelete = () => {
+    dispatch(removeSelectedProducts());
+    dispatch(findDublicateNumbers())
+  }
 
   return (
     <Table>
       <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
-        <TableRow>
+        <TableRow className=" ">
           <TableHead className="w-[100px]">
             <div className="flex gap-1">
-              <Button onClick={() => setAllcheckbox(true)} ><CheckSquare className=""/></Button>
-              <Button onClick={() => setAllcheckbox(false)}><RotateCcw/></Button>
+              <Button onClick={() => setAllcheckbox(true)} className="px-2 py-1">
+                <CheckSquare className="w-6 h-6" />
+              </Button>
+              <Button onClick={() => setAllcheckbox(false)} className="px-2 py-1">
+                <Square  className="w-6 h-6"/>
+              </Button>
             </div>
           </TableHead>
-          <TableHead className="w-[100px]">Model</TableHead>
-          <TableHead>Title</TableHead>
-          <TableHead>Company</TableHead>
-          <TableHead>Vendor Name</TableHead>
-          <TableHead>Numbers</TableHead>
-          <TableHead>Adress</TableHead>
-          <TableHead>IsPro</TableHead>
+          <TableHead >
+            <div className="flex gap-1   items-center justify-between w-full min-h-full">
+
+            <span>Model</span>
+            <ArrowDownAZ className="hover:cursor-pointer" onClick={() => dispatch(sortProducts("model"))} />
+            </div>
+          </TableHead>
+          <TableHead >
+            <div className="flex gap-1   items-center justify-between w-full min-h-full">
+
+            <span>Title</span>
+            <ArrowDownAZ className="hover:cursor-pointer" onClick={() => dispatch(sortProducts("title"))} />
+            </div>
+          </TableHead>
+          <TableHead >
+            <div className="flex gap-1   items-center justify-between w-full min-h-full">
+
+            <span>Company</span>
+            <ArrowDownAZ className="hover:cursor-pointer" onClick={() => dispatch(sortProducts("company"))} />
+            </div>
+          </TableHead>
+          <TableHead >
+            <div className="flex gap-1   items-center justify-between w-full min-h-full">
+
+            <span>Vendor</span>
+            <ArrowDownAZ className="hover:cursor-pointer" onClick={() => dispatch(sortProducts("vendor"))} />
+            </div>
+          </TableHead>
+          <TableHead >
+            <div className="flex gap-1   items-center justify-between w-full min-h-full">
+
+            <span>Numbers</span>
+            <ArrowDownAZ className="hover:cursor-pointer" onClick={() => dispatch(sortProducts("numbers"))} />
+            </div>
+          </TableHead>
+          <TableHead >
+            <div className="flex gap-1   items-center justify-between w-full min-h-full">
+
+            <span>Address</span>
+            <ArrowDownAZ className="hover:cursor-pointer" onClick={() => dispatch(sortProducts("address"))} />
+            </div>
+          </TableHead>
+          <TableHead >
+            <div className="flex gap-1   items-center justify-between w-full min-h-full">
+
+            <span>Pro</span>
+            <ArrowDownAZ className="hover:cursor-pointer" onClick={() => dispatch(sortProducts("pro"))} />
+            </div>
+          </TableHead>
           <TableHead className="text-right">Link</TableHead>
         </TableRow>
       </TableHeader>
@@ -106,7 +167,7 @@ export function CarsTable() {
             <TableCell className="text-right">
               {" "}
               <a href={car.url} target="_blank" rel="noopener noreferrer">
-                <Link>Open</Link>
+                <ArrowUpRightFromSquare>Open</ArrowUpRightFromSquare>
               </a>
             </TableCell>
           </TableRow>
@@ -153,7 +214,13 @@ export function CarsTable() {
       <TableFooter>
         <TableRow>
           <TableCell colSpan={3}>
-            <Button onClick={()=>{dispatch(removeSelectedProducts())}}><Trash2 /></Button>
+            <Button
+              onClick={() => {
+                handleDelete()
+              }}
+            >
+              <Trash2 />
+            </Button>
           </TableCell>
           {/* <TableCell className="text-right">$2,500.00</TableCell> */}
         </TableRow>
