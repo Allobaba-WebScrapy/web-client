@@ -63,7 +63,17 @@ const AutoScout24 = () => {
                           })
                           console.log("duplicated")
                     }
-                }else{
+                }else if(obj.error){
+                    dispatch(setError(obj.error))
+                    toast({
+                        variant: "destructive",
+                        title: "Request blocked.",
+                        description: obj.error ,
+                      })
+                    console.log(obj.error)
+                    setLoading(false)
+                }
+                else{
                     dispatch(setInfo(obj));
                 }
               }
