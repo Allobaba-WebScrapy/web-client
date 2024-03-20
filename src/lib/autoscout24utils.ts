@@ -1,5 +1,14 @@
 import {store} from '@/state/store'
 
+const getCars = () => {
+    const cars = store.getState().autoscout24.cars
+    if (cars.length === 0) {
+        alert('No Products Found in the table. Please scrape the products first.')
+        return false
+    }
+    return cars
+}
+
 const downloadFile =(data:string,format:'json'|'csv')=>{
     const encodedUri = encodeURI(data)
     const link = document.createElement("a");
@@ -11,7 +20,9 @@ const downloadFile =(data:string,format:'json'|'csv')=>{
 }
 
 export const downloadProductasAsCsv = () => {
-    const cars = store.getState().autoscout24.cars
+    const cars = getCars()
+    if (!cars) return
+
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += 'Title,Model,Compnay,Vendor,Numbres,Address,Pro,AddressUrl,Url\n'
     cars.map((car) => {
@@ -23,7 +34,8 @@ export const downloadProductasAsCsv = () => {
 }
 
 export const downloadProductsAsJson = () => {
-    const cars = store.getState().autoscout24.cars;
+    const cars = getCars()
+    if (!cars) return
     const jsonData = JSON.stringify({"Productas":cars},null,2);
     const dataStr = "data:text/json;charset=utf-8," + jsonData;
     downloadFile(dataStr,'json')
