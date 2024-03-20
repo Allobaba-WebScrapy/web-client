@@ -54,7 +54,7 @@ const AutoScout24 = () => {
           }),
         };
         const response = await fetch(
-          "http://144.126.251.4:3000/scrape",
+          "http://138.197.6.228:3000/scrape",
           requestOptions
         );
         if (!response.ok || !response.body) {
