@@ -1,8 +1,10 @@
 import { CarsTable } from "@/components/global/autoscout24/CarsTable";
 import InfoCard from "@/components/global/autoscout24/InfoCard";
 import { ScrapySearchCar } from "@/components/global/autoscout24/SearchCard";
+import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
+import { downloadProductasAsCsv, downloadProductsAsJson } from "@/lib/autoscout24utils";
 import {
   addCar,
   addOldRequest,
@@ -176,6 +178,8 @@ const AutoScout24 = () => {
       <div>
         <CarsTable />
       </div>
+      <Button onClick={downloadProductasAsCsv}>Download CSV</Button>
+      <Button onClick={downloadProductsAsJson}>Download Json</Button>
     </div>
   );
 };
