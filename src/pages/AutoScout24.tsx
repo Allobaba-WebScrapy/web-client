@@ -54,7 +54,7 @@ const AutoScout24 = () => {
           }),
         };
         const response = await fetch(
-          "http://138.197.6.228:3000/scrape",
+          "https://clownfish-app-uy5m7.ondigitalocean.app/scrape",
           requestOptions
         );
         if (!response.ok || !response.body) {
