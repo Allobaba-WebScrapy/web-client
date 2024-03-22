@@ -50,7 +50,7 @@ export function CarsTable() {
 
   return (
     <Table>
-      <TableCaption>A list of your recent invoices.</TableCaption>
+      <TableCaption>It's your Products that you have just scraped.</TableCaption>
       <TableHeader>
         <TableRow className=" ">
           <TableHead className="w-[100px]">
