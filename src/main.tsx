@@ -28,28 +28,28 @@ import AutoScout24 from "./pages/AutoScout24.tsx";
 // Orangge
 import Orange from "./pages/Orange.tsx";
 // PagesJaunes
-import PagesJaunes from "./pages/PagesJaunes.jsx";
+import PagesJaunes from "./pages/PagesJaunes.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route
       path="/"
-      // loader={rootLoader}
-      // action={rootAction}
-      // errorElement={<ErrorPage />}
+    // loader={rootLoader}
+    // action={rootAction}
+    // errorElement={<ErrorPage />}
     >
       <Route
         element={<RootLayout />}
-        // errorElement={<ErrorPage />}
+      // errorElement={<ErrorPage />}
       >
         <Route index element={<App />} />
         <Route
           path="scrapy"
           element={<ScrapyPagesLayout />}
-          
+
         >
           <Route path="orange" element={<Orange />} />
-          <Route path="pagesjaunes" element={<PagesJaunes />} />
+          <Route path="pagesjaunes/*" element={<PagesJaunes />} />
           <Route path="autoscout24" element={<AutoScout24 />} />
         </Route>
       </Route>
