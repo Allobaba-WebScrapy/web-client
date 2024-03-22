@@ -64,23 +64,23 @@ export function CarsTable() {
                     onClick={() => setAllcheckbox(false)}
                     id="cd"
                     checked={true}
-                    className="w-8 h-8 m-0 p-0 space-y-0 space-x-0 bg-black"
+                    className="w-8 h-8 m-0 p-0 space-y-0 space-x-0 border-2"
                   />
                   :
                   <Checkbox
                     onClick={() => setAllcheckbox(true)}
                     id="cd"
                     checked={false}
-                    className="w-8 h-8 m-0 p-0 space-y-0 space-x-0"
+                    className="w-8 h-8 m-0 p-0 space-y-0 space-x-0 border-2"
                   />
               }
               <Button
-                className="w-8 h-8 m-0 p-0 space-y-0 space-x-0 bg-red-500 hover:bg-red-500"
+                className="w-8 h-8 m-0 p-0 space-y-0 space-x-0 border-2 border-red-500 rounded text-red-500 bg-transparent hover:bg-transparent"
                 onClick={() => {
                   handleDelete()
                 }}
               >
-                <Trash2 className="scale-75 bg-red-500" />
+                <Trash2 className="scale-75 bg-transparent" />
               </Button>
             </div>
           </TableHead>
