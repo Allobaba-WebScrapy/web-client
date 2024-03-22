@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RootState } from "@/state/store";
-import { Loader2 } from "lucide-react";
+import { ArrowUpRightFromSquare, Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
 
 interface ScrapySearchCardProps {
@@ -37,10 +37,23 @@ export function ScrapySearchCar({
       <CardHeader>
         <CardTitle>Let's get some data</CardTitle>
         <CardDescription>
-          1-open https://www.autoscout24.fr/lst? <br />
-          2-make your fileter <br />
-          3-copy url
-          <br />
+          <div className="flex justify-between h-fit w-full">
+            <div>
+              1-open https://www.autoscout24.(fr|com)/lst? <br />
+              2-make your fileter <br />
+              3-copy url
+            </div>
+            <div className="h-full flex justify-center">
+              <a
+                href=" https://www.autoscout24.fr/lst"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-blue-500 hover:underline"
+              >
+                <ArrowUpRightFromSquare>Open</ArrowUpRightFromSquare>
+              </a>
+            </div>
+          </div>
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -54,7 +67,6 @@ export function ScrapySearchCar({
                 placeholder="Paste URL Here"
                 required
               />
-              
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="startPage">Start page</Label>
@@ -68,20 +80,19 @@ export function ScrapySearchCar({
               />
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="offers">Offers Number</Label>
+              <Label htmlFor="offers">Products Number</Label>
               <Input
                 id="offers"
                 min={1}
                 max={100}
                 name="offers"
-                placeholder="Start scraping from (1 to 100)"
+                placeholder="1 to 100"
                 required
               />
-              
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="waitingTime">
-                Max waiting time (Network spped)
+                Max waiting time (Network speed)
               </Label>
               <Select name="waitingTime" required>
                 <SelectTrigger id="waitingTime">
@@ -98,7 +109,11 @@ export function ScrapySearchCar({
               </Select>
             </div>
             <div>
-              <RadioGroup defaultValue="all" name="businessType" className="flex flex-row gap-4">
+              <RadioGroup
+                defaultValue="all"
+                name="businessType"
+                className="flex flex-row gap-4"
+              >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="b2b" id="r1" />
                   <Label htmlFor="r1">B2B</Label>
