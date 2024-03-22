@@ -1,7 +1,8 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { enableMapSet } from 'immer';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { store } from '../store';
+import { toast } from '@/components/ui/use-toast';
 
-enableMapSet();
+
 
 interface RequestDataState {
   url: string;
@@ -122,11 +123,9 @@ const autoscout24Slice = createSlice({
             }
           }
         }
-        console.log(allNumbers);
     
     },
     updateProductSelectedState: (state, action: PayloadAction<{index:number,value:boolean}>) => {
-      console.log('select update',action.payload.index,action.payload.value)
       state.cars[action.payload.index].selected = action.payload.value;
     },
     removeSelectedProducts: (state) => {
@@ -160,7 +159,85 @@ const autoscout24Slice = createSlice({
       }
     }
   }
-});
+  });
+
+
+export const scrapData = createAsyncThunk(
+  'users/scrapData',
+  async () => {
+    try {
+      store.dispatch(setLoading(true));
+      const requestData = store.getState().autoscout24.requestData; 
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: requestData.url,
+          startPage: requestData.startPage,
+          offersNumber: requestData.offers,
+          waitingTime: requestData.waitingTime,
+          businessType: requestData.businessType,
+        }),
+      };
+      const response = await fetch(
+        "https://clownfish-app-uy5m7.ondigitalocean.app/scrape",
+        requestOptions
+      );
+      if (!response.ok || !response.body) {
+        throw response.statusText;
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) {
+          store.dispatch(setLoading(false));
+          break;
+        }
+
+        const decodedChunk = decoder.decode(value, { stream: true });
+        const obj = JSON.parse(decodedChunk);
+        console.log("--- PRODUCT:",obj);
+        if (obj.url !== undefined) {
+          if (!store.getState().autoscout24.uniqueObjects.includes(decodedChunk)) {
+            store.dispatch(addUniqueObject(decodedChunk));
+            obj["selected"] = false;
+            store.dispatch(addCar(obj));
+          } else {
+            toast({
+              variant: "destructive",
+              title: "Product is already in the table.",
+              description: "The duplicate version doesn't added to table!",
+            });
+            console.log("duplicated");
+          }
+        } else if (obj.error) {
+          store.dispatch(setError(obj.error));
+          toast({
+            variant: "destructive",
+            title: "Request blocked.",
+            description: obj.error,
+          });
+          console.log(obj.error);
+          setLoading(false);
+        } else if (obj.type === "result_info") {
+          store.dispatch(setInfo(obj.data));
+        } else if (obj.type === "progress") {
+          store.dispatch(setRequestState(obj.data.message));
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      store.dispatch(setLoading(false));
+      // add later the other errors
+    }
+  },
+)
+
+
 
 export const { setRequestData,setRequestState,sortProducts,removeSelectedProducts,updateProductSelectedState,addCar,setError,addOldRequest,setInfo,setLoading,addUniqueObject,findDublicateNumbers } = autoscout24Slice.actions;
 
