@@ -21,8 +21,6 @@ import { AppDispatch, RootState } from "@/state/store";
 import {
   ArrowDownAZ,
   ArrowUpRightFromSquare,
-  CheckSquare,
-  Square,
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
