@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from "react";
 
 interface FilterOptionsProps {
-  onFiltersSubmit: (filters: State) => void;
+  onFiltersSubmit: (filters: Filters) => void;
   url: string;
 }
 
-interface State {
+interface Filters {
   startPage: string;
   sortOption: string;
   limit: string;
-  genre: string;
+  businessType: string;
 }
 
 const FilterOptions: React.FC<FilterOptionsProps> = ({ onFiltersSubmit, url }) => {
-  const [state, setState] = useState<State>({
+  const [filters, setFilters] = useState<Filters>({
     startPage: "",
     sortOption: "",
     limit: "1",
-    genre: "B2B",
+    businessType: "All",
   });
 
   useEffect(() => {
@@ -33,26 +33,26 @@ const FilterOptions: React.FC<FilterOptionsProps> = ({ onFiltersSubmit, url }) =
         ].includes(params.get("tri") || "") &&
           params.get("tri")) ||
         "PERTINENCE-ASC";
-      let newState: State = {
-        ...state,
+      let newState: Filters = {
+        ...filters,
         startPage: page,
         sortOption: sortOption,
       };
-      setState(newState);
+      setFilters(newState);
       onFiltersSubmit(newState);
     }
   }, [url]);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    let newState: State = { ...state, [name]: value };
+    let newState: Filters = { ...filters, [name]: value };
     if (name === "startPage" && (!newState.startPage || parseInt(newState.startPage) < 1)) {
       newState.startPage = "1";
     }
     if (name === "limit" && (!newState.limit || parseInt(newState.limit) < 1)) {
       newState.limit = "1";
     }
-    setState(newState);
+    setFilters(newState);
     onFiltersSubmit(newState);
   };
 
@@ -70,7 +70,7 @@ const FilterOptions: React.FC<FilterOptionsProps> = ({ onFiltersSubmit, url }) =
           id="startPage"
           name="startPage"
           type="number"
-          value={state.startPage}
+          value={filters.startPage}
           onChange={(e) => handleFormChange(e)}
           placeholder="Enter start page number"
         />
@@ -86,7 +86,7 @@ const FilterOptions: React.FC<FilterOptionsProps> = ({ onFiltersSubmit, url }) =
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="sortOption"
           name="sortOption"
-          value={state.sortOption}
+          value={filters.sortOption}
           onChange={(e) => handleFormChange(e)}
         >
           <option value="">Select sort option</option>
@@ -109,7 +109,7 @@ const FilterOptions: React.FC<FilterOptionsProps> = ({ onFiltersSubmit, url }) =
           id="limit"
           name="limit"
           type="number"
-          value={state.limit}
+          value={filters.limit}
           onChange={(e) => handleFormChange(e)}
           placeholder="Enter limit"
         />
@@ -126,9 +126,9 @@ const FilterOptions: React.FC<FilterOptionsProps> = ({ onFiltersSubmit, url }) =
             className="form-radio text-indigo-600 h-4 w-4"
             type="radio"
             id="B2B"
-            name="genre"
+            name="businessType"
             value="B2B"
-            checked={state.genre === "B2B"}
+            checked={filters.businessType === "B2B"}
             onChange={(e) => handleFormChange(e)}
           />
           <label className="ml-2 text-sm text-gray-300" htmlFor="B2B">
@@ -140,13 +140,27 @@ const FilterOptions: React.FC<FilterOptionsProps> = ({ onFiltersSubmit, url }) =
             className="form-radio text-indigo-600 h-4 w-4"
             type="radio"
             id="B2C"
-            name="genre"
+            name="businessType"
             value="B2C"
-            checked={state.genre === "B2C"}
+            checked={filters.businessType === "B2C"}
             onChange={(e) => handleFormChange(e)}
           />
           <label className="ml-2 text-sm text-gray-300" htmlFor="B2C">
             B2C
+          </label>
+        </div>
+        <div className="flex items-center">
+          <input
+            className="form-radio text-indigo-600 h-4 w-4"
+            type="radio"
+            id="All"
+            name="businessType"
+            value="All"
+            checked={filters.businessType === "All"}
+            onChange={(e) => handleFormChange(e)}
+          />
+          <label className="ml-2 text-sm text-gray-300" htmlFor="B2C">
+            All
           </label>
         </div>
       </div>

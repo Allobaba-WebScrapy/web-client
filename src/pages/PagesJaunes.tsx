@@ -1,198 +1,189 @@
-import React, { useState } from "react";
-import FilterOptions from "@/components/global/pagesJaunes/FilterOptions";
-import { processUrls } from "@/lib/handleUrlFunctions";
-
-interface CardInfo {
-  title: string;
-  activite: string;
-  adress: string;
-  phone: string[];
-}
-
-interface Card {
-  card_id: string;
-  card_url: string;
-  info: CardInfo;
-}
-
-const PagesJaunes: React.FC = () => {
-  const [cards, setCards] = useState<Card[]>([]);
-  const [error, setError] = useState<{ error: boolean; message: string }>({
-    error: false,
-    message: "",
-  });
-  const [baseUrl, setBaseUrl] = useState<{ url: string; filters: any }>({
-    url: "",
-    filters: {},
-  });
-  const [download, setDownload] = useState<boolean>(false);
-  const [showFilters, setShowFilters] = useState<boolean>(false);
-
-  const scrape = async (client_urls: any[]) => {
-    fetch("http://localhost:3040/setup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        client_urls: client_urls,
-      }),
-    })
-      .then(() => {
-        const eventSource = new EventSource("http://localhost:3040/stream");
-
-        eventSource.addEventListener("done", function () {
-          setDownload(true);
-          eventSource.close();
-        });
-
-        eventSource.addEventListener("failedVerification", function (event) {
-          setError({ error: true, message: "Verification error" });
-          const data = JSON.parse(event.data);
-          console.error("Verification error", data);
-          eventSource.close();
-        });
-
-        eventSource.onmessage = function (event) {
-          setError({ error: false, message: "" });
-          const data = JSON.parse(event.data);
-          setCards((prev) => [...prev, data]);
-          console.log(data);
-        };
-        eventSource.onerror = function (error) {
-          setError({ error: true, message: "Server error" });
-          console.error("EventSource failed:", error);
-          eventSource.close();
-        };
-      })
-      .catch((error) => {
-        setError({ error: true, message: "Connection Error" });
-        console.error("Error:", error);
-      });
-  };
+import { CarsTable } from "@/components/global/pagesJaunes/CardsTable";
+import { SearchForm } from "@/components/global/pagesJaunes/SearchForm";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/ui/use-toast";
+import { addCard, addOldRequest, addUniqueObject, findDublicateNumbers, setError, setProgress, clearProgress, setCardNumbers, setLoading, setRequestData, updateProgressCardNumbersForEachPage } from "@/state/pagesJaunes/PagesJaunesSlice";
+import { AppDispatch, RootState } from "@/state/store";
+import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect } from "react";
+import { processUrl } from "@/lib/pagesjaunes_utils"
+import { Route, Routes, useNavigate } from "react-router-dom";
+import LoadingPage from "@/components/global/pagesJaunes/LoadingPage";
 
 
-  const onFiltersSubmit = (filters: any) => {
-    setBaseUrl({ ...baseUrl, filters: filters });
-  };
+const PagesJaunes = () => {
+    const requestData = useSelector((state: RootState) => state.pagesJaunes.requestData);
+    const uniqueObjects = useSelector((state: RootState) => state.pagesJaunes.uniqueObjects);
+    const isLoading = useSelector((state: RootState) => state.pagesJaunes.loading);
+    const oldRequestData = useSelector((state: RootState) => state.pagesJaunes.oldRequests);
+    const progress = useSelector((state: RootState) => state.pagesJaunes.progress);
+    const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
+    const { toast } = useToast()
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!baseUrl.url) {
-      console.log("URL is required");
-      return;
-    } else if (!baseUrl.url.startsWith("https://www.pagesjaunes.fr/annuaire")) {
-      console.log("URL must be from pagesjaunes.fr");
-      return;
+
+    const scrape = async (RequestData: any) => {
+        if (!isValidUrl(RequestData.url) || !true) return
+        console.log("Scraping...")
+        dispatch(setLoading(true))
+        dispatch(clearProgress())
+        fetch("http://localhost:3070/setup", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                url: RequestData.url,
+                startPage: RequestData.startPage,
+                endPage: RequestData.endPage,
+                businessType: RequestData.businessType,
+            }),
+        })
+            .then(() => {
+                console.log("Fetching data...")
+                navigate("/scrapy/pagesjaunes/loading")
+                const eventSource = new EventSource("http://localhost:3070/stream");
+
+                //! ------------------- Get the progress from the server -------------------
+                eventSource.addEventListener('progress', function (event) {
+                    console.log(JSON.parse(event.data));
+                    dispatch(setProgress(JSON.parse(event.data)));
+                });
+                //! --------------------- Get the data from the server --------------------
+                eventSource.onmessage = function (event) {
+                    const obj = JSON.parse(event.data);
+                    if (obj.card_url !== undefined) {
+                        if (!uniqueObjects.includes(event.data)) {
+                            console.log(obj);
+                            dispatch(addUniqueObject(event.data))
+                            obj["selected"] = false;
+                            dispatch(addCard(obj));
+                            dispatch(updateProgressCardNumbersForEachPage());
+                        } else {
+                            toast({
+                                variant: "destructive",
+                                title: "Card is already in the table.",
+                                description: "The duplicate version doesn't added to table!",
+                            });
+                            console.log("duplicated");
+                        }
+                    }
+                }
+                //! ------------------- Get the done event from the server -------------------
+                eventSource.addEventListener("done", function () {
+                    console.log({ type: "progress", progress: "Scraping is done" })
+                    dispatch(setProgress({ type: "progress", progress: "Scraping is done" }))
+                    dispatch(setLoading(false))
+                    eventSource.close();
+                });
+                //! ------------------- Get the error from the server -------------------
+                eventSource.addEventListener("errorEvent", function (event) {
+                    dispatch(setLoading(false))
+                    console.error(JSON.parse(event.data));
+                    dispatch(setProgress(JSON.parse(event.data)));
+                    eventSource.close();
+                });
+                eventSource.onerror = function (error) {
+                    dispatch(setLoading(false))
+                    console.error({ type: "error", progress: error });
+                    dispatch(setProgress({ type: "error", progress: "EventSource failed" }));
+                    eventSource.close();
+                };
+            })
+            .catch((error) => {
+                dispatch(setLoading(false))
+                console.error({ type: "error", progress: error.message });
+                dispatch(setProgress({ type: "error", progress: "Fetch Connection Error" }));
+            });
+    };
+
+
+    const isValidUrl = (url: string) => {
+        return url.trim().startsWith("https://www.pagesjaunes.fr/annuaire")
     }
-    const urls = [
-      {
-        url: baseUrl.url,
-        params: {
-          page: baseUrl.filters.startPage,
-          tri: baseUrl.filters.sortOption,
-        },
-        limit: baseUrl.filters.limit,
-        genre: baseUrl.filters.genre,
-      },
-    ];
-    console.log(processUrls(urls));
-    scrape(processUrls(urls));
-  };
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        dispatch(setError(null))
 
-  return (
-    <div className="flex flex-col justify-center items-center min-h-screen h-full py-10 bg-gray-800">
-      <div className="bg-gray-700 shadow-md rounded px-8 pt-6 pb-8 mb-4 w-2/3 h-auto">
-        <div className="mb-4">
-          <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="url">
-            URL
-          </label>
-          <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="url"
-            type="text"
-            value={baseUrl.url}
-            onChange={(e) => setBaseUrl({ ...baseUrl, url: e.target.value })}
-            placeholder="Enter URL"
-          />
-        </div>
-        <div className="filters">
-          <h4
-            onClick={() => setShowFilters((prev) => !prev)}
-            className="text-gray-300 text-sm font-bold w-full h-10 flex justify-center items-center border-[1px] border-gray-400 cursor-pointer"
-          >
-            FILTERS
-          </h4>
-          <div className={showFilters ? "block" : "hidden"}>
-            <FilterOptions onFiltersSubmit={onFiltersSubmit} url={baseUrl.url} />
-          </div>
-        </div>
-        <div className="my-4">
-          <button
-            onClick={handleSubmit}
-            className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="submit"
-          >
-            Send URL
-          </button>
-        </div>
-      </div>
-      {error.error ? (
-        <div className="bg-red-500 text-white font-bold py-2 px-4 rounded">{error.message}</div>
-      ) : (
-        cards.length > 0 && (
-          <>
-            <table className="table-auto w-[95%] max-h-[500px] overflow-scroll text-zinc-300 text-center bg-gray-700 rounded">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2">Name</th>
-                  <th className="px-4 py-2">Activity</th>
-                  <th className="px-4 py-2">Address</th>
-                  <th className="px-4 py-2">Phone</th>
-                  <th className="px-4 py-2">URL</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cards.map((card, index) => (
-                  <tr key={card.card_id + index} className="border-t-2 border-zinc-100">
-                    <td className="px-4 py-5">{card.info.title}</td>
-                    <td className="px-4 py-5">{card.info.activite}</td>
-                    <td className="px-4 py-5">{card.info.adress}</td>
-                    <td className="">
-                      {card.info.phone.map((phone, index) => (
-                        <div className="px-3 py-2 bg-neutral-900 rounded my-2" key={index}>
-                          {phone}
+        const form_data: { [k: string]: string | number | FormDataEntryValue } = Object.fromEntries(new FormData(e.currentTarget));
+        form_data.url = form_data.url as string;
+        form_data.startPage = form_data.startPage as string;
+        form_data.endPage = form_data.endPage as string;
+        form_data.sortOption = form_data.sortOption as string;
+        form_data.businessType = form_data.businessType as string;
+        if (isValidUrl(form_data.url)) {
+            // Process Url and set Request Data
+            const baseUrl =
+            {
+                url: form_data.url,
+                params: {
+                    startPage: form_data.startPage,
+                    tri: form_data.sortOption,
+                },
+                endPage: form_data.endPage,
+                businessType: form_data.businessType,
+            }
+            const RequestData = processUrl(baseUrl);
+            // Check if the url is already scraped
+            if (oldRequestData.includes(JSON.stringify(form_data))) {
+                const confirm = window.confirm('You have already scraped this url! Do you want to continue?');
+                if (confirm) {
+                    dispatch(setRequestData(RequestData));
+                    scrape(RequestData)
+                } else {
+
+                    return
+                }
+            } else {
+                dispatch(setRequestData(RequestData));
+                dispatch(addOldRequest());
+                scrape(RequestData)
+            }
+            console.log(RequestData);
+        } else {
+            dispatch(setError('Invalid url'))
+        }
+        //! console.log(form_data);
+        //! console.log(oldRequestData);
+    }
+    // Test if there is nay repeated number in cars vendor numbers
+    useEffect(() => {
+        if (!isLoading) {
+            dispatch(findDublicateNumbers())
+            console.log(progress);
+        }
+    }
+        , [dispatch, isLoading])
+
+
+    return (
+        <div className="flex flex-col w-full items-center justify-center">
+            <Toaster />
+            <Routes>
+                <Route path="/" element={
+                    <React.Fragment>
+                        <div>
+                            <SearchForm handleSubmit={handleSubmit} />
                         </div>
-                      ))}
-                    </td>
-                    <td className="px-4 py-5">
-                      <a
-                        href={card.card_url}
-                        target="_blank"
-                        className="inline-block w-32 py-3 bg-yellow-400 rounded text-white font-semibold"
-                      >
-                        Visite Card
-                      </a>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div>
-              {download && (
-                <button
-                  className="inline-block w-32 py-3 bg-green-500 rounded text-white font-semibold"
-                  onClick={() => setDownload(false)}
-                >
-                  Download CSV
-                </button>
-              )}
-            </div>
-          </>
-        )
-      )}
-    </div>
-  );
+                    </React.Fragment>
+                } />
+                <Route path="loading" element={
+                    <React.Fragment>
+                        <div>
+                            <LoadingPage />
+                        </div>
+                    </React.Fragment>
+                } />
+                <Route path="results" element={
+                    <React.Fragment>
+                        <div className="flex items-center">
+                            <CarsTable />
+                        </div>
+                    </React.Fragment>
+                } />
+            </Routes>
+        </div>
+    )
 };
 
 export default PagesJaunes;
