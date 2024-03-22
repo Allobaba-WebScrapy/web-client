@@ -53,7 +53,19 @@ const initialState: PagesJaunesState = {
     endPage: 1,
     businessType: "ALL",
   },
-  cards: [],
+  cards: [
+    // {
+    //   selected: false,
+    //   card_id: "552",
+    //   card_url: "545",
+    //   info: {
+    //     title: "565",
+    //     activite: "35",
+    //     address: "233",
+    //     phones:  ["123", "456"],
+    //   },
+    // },
+  ],
   progress: [],
   cardsNumbers: 0,
   loading: false,

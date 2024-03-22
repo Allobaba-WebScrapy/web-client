@@ -92,7 +92,7 @@ const PagesJaunes = () => {
             })
             .catch((error) => {
                 dispatch(setLoading(false))
-                console.error({ type: "error", progress: error });
+                console.error({ type: "error", progress: error.message });
                 dispatch(setProgress({ type: "error", progress: "Fetch Connection Error" }));
             });
     };
