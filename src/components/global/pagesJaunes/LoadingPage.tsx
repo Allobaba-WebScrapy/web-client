@@ -10,7 +10,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, FileCode, FileJson, FileX, Loader2, LucideArrowRight } from "lucide-react";
+import {  Loader2, LucideArrowRight } from "lucide-react";
 import { RootState } from "@/state/store";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";

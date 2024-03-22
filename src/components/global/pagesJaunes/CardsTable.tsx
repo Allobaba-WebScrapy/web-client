@@ -21,9 +21,7 @@ import { AppDispatch, RootState } from "@/state/store";
 import {
   ArrowDownAZ,
   ArrowUpRightFromSquare,
-  Loader2,
   Trash2,
-  Download,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -32,7 +30,6 @@ import { useDispatch, useSelector } from "react-redux";
 export function CarsTable() {
   const [allChecked, setAllChecked] = useState(false);
   const cards = useSelector((state: RootState) => state.pagesJaunes.cards);
-  const data = useSelector((state: RootState) => state.pagesJaunes.requestData);
   const dublicateNumbers = useSelector(
     (state: RootState) => state.pagesJaunes.dublicateNumbers
   );

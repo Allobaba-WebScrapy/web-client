@@ -2,7 +2,7 @@ import { CarsTable } from "@/components/global/pagesJaunes/CardsTable";
 import { SearchForm } from "@/components/global/pagesJaunes/SearchForm";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
-import { addCard, addOldRequest, addUniqueObject, findDublicateNumbers, setError, setProgress, clearProgress, setCardNumbers, setLoading, setRequestData, updateProgressCardNumbersForEachPage } from "@/state/pagesJaunes/PagesJaunesSlice";
+import { addCard, addOldRequest, addUniqueObject, findDublicateNumbers, setError, setProgress, clearProgress, setLoading, setRequestData, updateProgressCardNumbersForEachPage } from "@/state/pagesJaunes/PagesJaunesSlice";
 import { AppDispatch, RootState } from "@/state/store";
 import { useSelector, useDispatch } from "react-redux";
 import React, { useEffect } from "react";
@@ -12,7 +12,6 @@ import LoadingPage from "@/components/global/pagesJaunes/LoadingPage";
 
 
 const PagesJaunes = () => {
-    const requestData = useSelector((state: RootState) => state.pagesJaunes.requestData);
     const uniqueObjects = useSelector((state: RootState) => state.pagesJaunes.uniqueObjects);
     const isLoading = useSelector((state: RootState) => state.pagesJaunes.loading);
     const oldRequestData = useSelector((state: RootState) => state.pagesJaunes.oldRequests);
