@@ -1,5 +1,6 @@
 import { CarsTable } from "@/components/global/autoscout24/CarsTable";
 import InfoCard from "@/components/global/autoscout24/InfoCard";
+import { ProgressCard } from "@/components/global/autoscout24/ProgressCard";
 import { ScrapySearchCar } from "@/components/global/autoscout24/SearchCard";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
@@ -85,8 +86,10 @@ const AutoScout24 = () => {
       <div >
         <ScrapySearchCar handleSubmit={handleSubmit} />
       </div>
-      <div className="bg-red-100">
-        <InfoCard />
+      <div className="">
+        {/* <InfoCard /> */}
+        <ProgressCard />
+        <InfoCard /> 
       </div>
       </div>
       <div>
