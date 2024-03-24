@@ -29,21 +29,22 @@ export function ProgressCard({ className, ...props }: ProgressCardProps) {
   return (
     <Card className={cn("w-[380px]", className)} {...props}>
       <CardHeader className="gap-4">
-        {isLoading ? (
+        {isLoading && (
           <div className="flex gap-1 items-baseline">
             <span>{progress}%</span>
             <ProgressBar progress={progress} />
           </div>
-        ) : (
-          <div className="flex gap-1 items-baseline">
-            <span>Done</span>
-            <ProgressBar progress={100} />
-          </div>
-        )}
+        ) }
         <CardTitle className="text-xl text-gray-800">Actions History</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div>
+          {actionsHistory.length === 0 && (
+            <p className="text-sm text-gray-500">
+              No actions have been performed yet.
+            </p>
+          )  
+          }
           {actionsHistory.map((task, index) => (
             <div
               key={index}
