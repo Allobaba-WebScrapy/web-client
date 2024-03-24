@@ -1,11 +1,9 @@
 import { CarsTable } from "@/components/global/autoscout24/CarsTable";
 import InfoCard from "@/components/global/autoscout24/InfoCard";
+import ProductsDownloadCard from "@/components/global/autoscout24/ProductsDownloadCard";
 import { ProgressCard } from "@/components/global/autoscout24/ProgressCard";
 import { ScrapySearchCar } from "@/components/global/autoscout24/SearchCard";
-import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
-
-import { downloadProductasAsCsv, downloadProductsAsJson } from "@/lib/autoscout24utils";
 import {
   addOldRequest,
   findDublicateNumbers,
@@ -18,7 +16,6 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 const AutoScout24 = () => {
-  
   const isLoading = useSelector(
     (state: RootState) => state.autoscout24.loading
   );
@@ -28,7 +25,10 @@ const AutoScout24 = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const isValidUrl = (url: string) => {
-    return url.trim().startsWith("https://www.autoscout24.fr/lst") || url.trim().startsWith("https://www.autoscout24.com/lst");
+    return (
+      url.trim().startsWith("https://www.autoscout24.fr/lst") ||
+      url.trim().startsWith("https://www.autoscout24.com/lst")
+    );
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,14 +55,14 @@ const AutoScout24 = () => {
         );
         if (confirm) {
           dispatch(setRequestData(RequestData));
-          dispatch(scrapData())
+          dispatch(scrapData());
         } else {
           return;
         }
       } else {
         dispatch(setRequestData(RequestData));
         dispatch(addOldRequest());
-        dispatch(scrapData())
+        dispatch(scrapData());
       }
     } else {
       dispatch(
@@ -80,22 +80,23 @@ const AutoScout24 = () => {
     }
   }, [dispatch, isLoading]);
   return (
-    <div className="flex flex-col w-full items-center ">
+    <div className="flex flex-col w-full items-center">
       <Toaster />
-      <div className="flex gap-2 w-full h-fit justify-center">
-      <div >
-        <ScrapySearchCar handleSubmit={handleSubmit} />
+      <div className="flex gap-2 w-full h-fit justify-center bg-green-100">
+        <div className="">
+          <ScrapySearchCar handleSubmit={handleSubmit} />
+        </div>
+        <div className="flex flex-col bg-red-100">
+          <ProgressCard />
+          {!isLoading && <InfoCard />}
+        </div>
+        <div>
+          <ProductsDownloadCard />
+        </div>
       </div>
-      <div className="">
-        <ProgressCard />
-        {!isLoading && <InfoCard /> }
-      </div>
-      </div>
-      <div>
+      <div className="mt-8">
         <CarsTable />
       </div>
-      <Button onClick={downloadProductasAsCsv}>Download CSV</Button>
-      <Button onClick={downloadProductsAsJson}>Download Json</Button>
     </div>
   );
 };
