@@ -14,9 +14,9 @@ const InfoCard: React.FC<InfoCardProps> = () => {
     (error) => !error.startsWith("error/")
   );
   return (
-    <Card className={"w-[380px]"}>
+    <Card className={"w-[380px] flex-grow"}>
       <CardHeader className="gap-4">
-        <CardTitle className="text-xl text-gray-800">Request Info</CardTitle>
+        <CardTitle className="text-xl text-gray-800">Response Info</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div>

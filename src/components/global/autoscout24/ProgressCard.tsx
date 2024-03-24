@@ -27,7 +27,7 @@ export function ProgressCard({ className, ...props }: ProgressCardProps) {
   
   
   return (
-    <Card className={cn("w-[380px]", className)} {...props}>
+    <Card className={cn("w-[380px] flex-grow", className)} {...props}>
       <CardHeader className="gap-4">
         {isLoading && (
           <div className="flex gap-1 items-baseline">
