@@ -52,9 +52,9 @@ interface AutoScout24State {
   uniqueObjects: string[];
   dublicateNumbers: string[];
   oldRequests :  string[];
-  requestState: string;
   sumProductRequested: number;
   productsNumBeforeLastRequest: number;
+  actionsHistory:string[];
 }
 
 // Initial state
@@ -67,9 +67,9 @@ const initialState: AutoScout24State = {
   uniqueObjects: [],
   dublicateNumbers: [],
   oldRequests: [],
-  requestState:'sending request',
   sumProductRequested: 0,
   productsNumBeforeLastRequest:0,
+  actionsHistory:[]
 };
 
 // Create slice
@@ -81,13 +81,13 @@ const autoscout24Slice = createSlice({
       state.requestData = action.payload;
       state.productsNumBeforeLastRequest = state.cars.length;
       state.sumProductRequested = state.cars.length + action.payload.offers;
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }
+    ,
     addCar: (state, action: PayloadAction<ProductType>) => {
       state.cars = [...state.cars,action.payload];
     },
-    setRequestState: (state, action: PayloadAction<string>) => {
-      state.requestState = action.payload;
+    addActionToHistory: (state, action: PayloadAction<string>) => {
+      state.actionsHistory = [...state.actionsHistory,action.payload].splice(-4)
     }
     ,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -167,6 +167,7 @@ export const scrapData = createAsyncThunk(
   async () => {
     try {
       store.dispatch(setLoading(true));
+      store.dispatch(addActionToHistory("Send Request"));
       const requestData = store.getState().autoscout24.requestData; 
       const requestOptions = {
         method: "POST",
@@ -226,7 +227,7 @@ export const scrapData = createAsyncThunk(
         } else if (obj.type === "result_info") {
           store.dispatch(setInfo(obj.data));
         } else if (obj.type === "progress") {
-          store.dispatch(setRequestState(obj.data.message));
+          store.dispatch(addActionToHistory(obj.data.message));
         }
       }
     } catch (error) {
@@ -239,6 +240,6 @@ export const scrapData = createAsyncThunk(
 
 
 
-export const { setRequestData,setRequestState,sortProducts,removeSelectedProducts,updateProductSelectedState,addCar,setError,addOldRequest,setInfo,setLoading,addUniqueObject,findDublicateNumbers } = autoscout24Slice.actions;
+export const { setRequestData,addActionToHistory,sortProducts,removeSelectedProducts,updateProductSelectedState,addCar,setError,addOldRequest,setInfo,setLoading,addUniqueObject,findDublicateNumbers } = autoscout24Slice.actions;
 
 export default autoscout24Slice.reducer;
