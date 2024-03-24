@@ -82,11 +82,11 @@ const AutoScout24 = () => {
   return (
     <div className="flex flex-col w-full items-center">
       <Toaster />
-      <div className="flex gap-2 w-full h-fit justify-center bg-green-100">
+      <div className="flex gap-2 w-full h-fit justify-center ">
         <div className="">
           <ScrapySearchCar handleSubmit={handleSubmit} />
         </div>
-        <div className="flex flex-col bg-red-100">
+        <div className="flex flex-col ">
           <ProgressCard />
           {!isLoading && <InfoCard />}
         </div>
