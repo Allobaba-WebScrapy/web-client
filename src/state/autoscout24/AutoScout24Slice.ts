@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { store } from '../store';
 import { toast } from '@/components/ui/use-toast';
+import { replaceErrorNotFoundWithDashs } from '@/lib/autoscout24utils';
 
 
 
@@ -206,6 +207,7 @@ export const scrapData = createAsyncThunk(
           if (!store.getState().autoscout24.uniqueObjects.includes(decodedChunk)) {
             store.dispatch(addUniqueObject(decodedChunk));
             obj["selected"] = false;
+            obj["data"] = replaceErrorNotFoundWithDashs(obj["data"])
             store.dispatch(addCar(obj));
           } else {
             toast({
