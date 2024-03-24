@@ -195,7 +195,7 @@ export function CarsTable() {
           <>
             {Array.from({
               length:
-                cars.length >= data.offers ? 3 : data.offers - cars.length,
+                cars.length >= data.offers ? 1 : data.offers - cars.length,
             }).map((_, index) => (
               <TableRow key={index}>
                 <TableCell className="text-right">
