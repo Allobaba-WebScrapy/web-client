@@ -166,9 +166,13 @@ export function CarsTable() {
                 : car.data.vendor_info.numbers ===
                   "error/product/info-card/numbers/request-failed"
                   ? "Get numbers failed"
-                  : car.data.vendor_info.numbers.length === 0
+                  : car.data.vendor_info.numbers === "---"? "---" :
+                  (typeof car.data.vendor_info.numbers != typeof []) ? "---"
+                  :
+                  car.data.vendor_info.numbers.length === 0
                     ? "No Numbers len 0"
-                    : (car.data.vendor_info.numbers as string[]).map(
+                    : 
+                    (car.data.vendor_info.numbers as string[]).map(
                       (n: string, i) => (
                         <p
                           className={
@@ -181,7 +185,11 @@ export function CarsTable() {
                       )
                     )}
             </TableCell>
-            <TableCell>{car.data.vendor_info.address.text}</TableCell>
+            <TableCell>
+            <a href={car.url} target="_blank" rel="noopener noreferrer" className="text-sky-800">
+              {car.data.vendor_info.address.text}
+              </a>
+              </TableCell>
             <TableCell>{car.data.vendor_info.pro ? "True" : "False"}</TableCell>
             <TableCell className="text-right">
               {" "}
