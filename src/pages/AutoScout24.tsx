@@ -87,9 +87,8 @@ const AutoScout24 = () => {
         <ScrapySearchCar handleSubmit={handleSubmit} />
       </div>
       <div className="">
-        {/* <InfoCard /> */}
         <ProgressCard />
-        <InfoCard /> 
+        {!isLoading && <InfoCard /> }
       </div>
       </div>
       <div>
