@@ -138,7 +138,6 @@ const pagesJaunes = createSlice({
           }
         }
       }
-      console.log(allNumbers);
     },
     updateCardSelectedState: (
       state,

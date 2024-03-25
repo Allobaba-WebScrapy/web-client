@@ -23,16 +23,19 @@ import {
   ArrowUpRightFromSquare,
   Trash2,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export function CarsTable() {
   const [allChecked, setAllChecked] = useState(false);
+  const requestData = useSelector((state: RootState) => state.pagesJaunes.requestData);
   const cards = useSelector((state: RootState) => state.pagesJaunes.cards);
   const dublicateNumbers = useSelector(
     (state: RootState) => state.pagesJaunes.dublicateNumbers
   );
+  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const isLoading = useSelector(
     (state: RootState) => state.pagesJaunes.loading
@@ -47,6 +50,12 @@ export function CarsTable() {
     dispatch(removeSelectedCards());
     dispatch(findDublicateNumbers())
   }
+
+  useEffect(() => {
+    if (requestData.url === "") {
+      navigate("/scrapy/pagesjaunes")
+    }
+  });
 
   return (
     <div>
