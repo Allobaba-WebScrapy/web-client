@@ -186,7 +186,7 @@ export function CarsTable() {
                     )}
             </TableCell>
             <TableCell>
-            <a href={car.url} target="_blank" rel="noopener noreferrer" className="text-sky-800">
+            <a href={car.data.vendor_info.address.url} target="_blank" rel="noopener noreferrer" className="text-sky-800">
               {car.data.vendor_info.address.text}
               </a>
               </TableCell>
