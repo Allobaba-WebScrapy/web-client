@@ -15,15 +15,16 @@ const PagesJaunes = () => {
     const uniqueObjects = useSelector((state: RootState) => state.pagesJaunes.uniqueObjects);
     const isLoading = useSelector((state: RootState) => state.pagesJaunes.loading);
     const oldRequestData = useSelector((state: RootState) => state.pagesJaunes.oldRequests);
-    const progress = useSelector((state: RootState) => state.pagesJaunes.progress);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { toast } = useToast()
 
 
+    // Scrape the data from the server
     const scrape = async (RequestData: any) => {
         if (!isValidUrl(RequestData.url) || !true) return
         console.log("Scraping...")
+        console.log(RequestData);
         dispatch(setLoading(true))
         dispatch(clearProgress())
         fetch("http://localhost:3070/setup", {
@@ -39,7 +40,6 @@ const PagesJaunes = () => {
             }),
         })
             .then(() => {
-                console.log("Fetching data...")
                 navigate("/scrapy/pagesjaunes/loading")
                 const eventSource = new EventSource("http://localhost:3070/stream");
 
@@ -70,36 +70,35 @@ const PagesJaunes = () => {
                 }
                 //! ------------------- Get the done event from the server -------------------
                 eventSource.addEventListener("done", function () {
-                    console.log({ type: "progress", progress: "Scraping is done" })
                     dispatch(setProgress({ type: "progress", progress: "Scraping is done" }))
                     dispatch(setLoading(false))
                     eventSource.close();
                 });
                 //! ------------------- Get the error from the server -------------------
                 eventSource.addEventListener("errorEvent", function (event) {
-                    dispatch(setLoading(false))
-                    console.error(JSON.parse(event.data));
                     dispatch(setProgress(JSON.parse(event.data)));
+                    dispatch(setLoading(false))
                     eventSource.close();
                 });
-                eventSource.onerror = function (error) {
-                    dispatch(setLoading(false))
-                    console.error({ type: "error", progress: error });
+                eventSource.onerror = function () {
                     dispatch(setProgress({ type: "error", progress: "EventSource failed" }));
+                    dispatch(setLoading(false))
                     eventSource.close();
                 };
             })
             .catch((error) => {
-                dispatch(setLoading(false))
                 console.error({ type: "error", progress: error.message });
                 dispatch(setProgress({ type: "error", progress: "Fetch Connection Error" }));
+                dispatch(setLoading(false))
             });
     };
 
-
+    // Check if the url is valid
     const isValidUrl = (url: string) => {
         return url.trim().startsWith("https://www.pagesjaunes.fr/annuaire")
     }
+
+    // Handle the form submit
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         dispatch(setError(null))
@@ -138,18 +137,15 @@ const PagesJaunes = () => {
                 dispatch(addOldRequest());
                 scrape(RequestData)
             }
-            console.log(RequestData);
         } else {
-            dispatch(setError('Invalid url'))
+            dispatch(setError({ type: "url", message: "Invalid URL"}))
         }
-        //! console.log(form_data);
-        //! console.log(oldRequestData);
     }
+
     // Test if there is nay repeated number in cars vendor numbers
     useEffect(() => {
         if (!isLoading) {
             dispatch(findDublicateNumbers())
-            console.log(progress);
         }
     }
         , [dispatch, isLoading])
@@ -159,7 +155,7 @@ const PagesJaunes = () => {
         <div className="flex flex-col w-full items-center justify-center">
             <Toaster />
             <Routes>
-                <Route path="/" element={
+                <Route path="/*" element={
                     <React.Fragment>
                         <div>
                             <SearchForm handleSubmit={handleSubmit} />
@@ -169,7 +165,7 @@ const PagesJaunes = () => {
                 <Route path="loading" element={
                     <React.Fragment>
                         <div>
-                            <LoadingPage />
+                            <LoadingPage scrape={scrape} />
                         </div>
                     </React.Fragment>
                 } />

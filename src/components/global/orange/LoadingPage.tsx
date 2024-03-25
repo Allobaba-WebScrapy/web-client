@@ -23,7 +23,7 @@ import {
 type Step = {
     type: string;
     message?: string;
-    cardsNumbers?: number;
+    proccess?: any;
 };
 type CardProps = React.ComponentProps<typeof Card>;
 type ScrapeFunction = (requestData: any) => Promise<void>;
@@ -32,19 +32,19 @@ type LoadingPageProps = CardProps & {
 };
 
 const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }) => {
-    const requestData = useSelector((state: RootState) => state.pagesJaunes.requestData);
-    const cards = useSelector((state: RootState) => state.pagesJaunes.cards);
+    const requestData = useSelector((state: RootState) => state.orange.requestData);
+    const cards = useSelector((state: RootState) => state.orange.cards);
     const progress = useSelector(
-        (state: RootState) => state.pagesJaunes.progress
+        (state: RootState) => state.orange.progress
     );
     const isLoading = useSelector(
-        (state: RootState) => state.pagesJaunes.loading
+        (state: RootState) => state.orange.loading
     );
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (requestData.url === "") {
-            navigate("/scrapy/pagesjaunes")
+        if (requestData.activites_name === "") {
+            navigate("/scrapy/orange")
         }
     });
 
@@ -71,9 +71,9 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
                                     <p className="text-sm font-medium leading-none">
                                         {step.message}
                                     </p>
-                                    {step.cardsNumbers !== undefined && (
+                                    {step.proccess !== undefined && (
                                         <p className="font-normal text-black">
-                                            {step.cardsNumbers} cards scraped / 20
+                                            {step.proccess.nCard}/{step.proccess.length}
                                         </p>
                                     )}
                                     <p className={`text-sm text-muted-foreground ${step.type === "progress" ? "text-green-500" : "text-red-500"}`}>{step.type}</p>
@@ -94,7 +94,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
                     ) : cards.length > 0 ? (
                         <div className="w-full flex flex-col gap-2">
                             <Button
-                                onClick={() => navigate("/scrapy/pagesjaunes/results")}
+                                onClick={() => navigate("/scrapy/orange/results")}
                                 className="h-20 w-full flex gap-5 justify-center items-center bg-zinc-700 text-white text-xl hover:bg-zinc-600"
                             >
                                 View Results

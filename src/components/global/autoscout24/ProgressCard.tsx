@@ -27,7 +27,7 @@ export function ProgressCard({ className, ...props }: ProgressCardProps) {
   
   
   return (
-    <Card className={cn("w-[380px] flex-grow", className)} {...props}>
+    <Card className={cn("w-[380px] sm:w-[600px] md:w-[380px] flex-grow", className)} {...props}>
       <CardHeader className="gap-4">
         {isLoading && (
           <div className="flex gap-1 items-baseline">
@@ -35,12 +35,12 @@ export function ProgressCard({ className, ...props }: ProgressCardProps) {
             <ProgressBar progress={progress} />
           </div>
         ) }
-        <CardTitle className="text-xl text-gray-800">Actions History</CardTitle>
+        <CardTitle className="text-xltext-gray-800">Actions History</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div>
           {actionsHistory.length === 0 && (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               No actions have been performed yet.
             </p>
           )  
@@ -58,7 +58,7 @@ export function ProgressCard({ className, ...props }: ProgressCardProps) {
                 )}
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">{task}</p>
+                <p className="text-sm font-medium leading-none capitalize">{task}</p>
               </div>
             </div>
           ))}

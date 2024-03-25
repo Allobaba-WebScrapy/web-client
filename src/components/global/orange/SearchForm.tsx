@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -23,6 +23,7 @@ import { useSelector } from "react-redux";
 import { Loader2 } from "lucide-react";
 
 
+
 interface SearchFormProps {
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
@@ -30,57 +31,57 @@ interface SearchFormProps {
 export function SearchForm({
     handleSubmit,
 }: React.PropsWithChildren<SearchFormProps>) {
-    const ATError = useSelector((state: RootState) => state.pagesJaunes.error);
     const isLoading = useSelector(
-        (state: RootState) => state.pagesJaunes.loading
+        (state: RootState) => state.orange.loading
     );
-    const [url, setUrl] = useState("");
-    const [startPage, setStartPage] = useState("1");
-    const [sortOption, setSortOption] = useState('PERTINENCE-ASC');
 
-    // Manage the URL structure
-    useEffect(() => {
-        const urlParams = new URLSearchParams(url);
-        const page = urlParams.get('page') || "1";
-        const tri = ([
-            "PERTINENCE-ASC",
-            "NOTE_GLOBALE-DESC",
-            "NOMBRE_GLOBAL_AVIS-DESC",
-        ].includes(urlParams.get("tri") || "") &&
-            urlParams.get("tri")) ||
-            "PERTINENCE-ASC";;
-        setStartPage(page)
-        setSortOption(tri)
-    }, [url]);
+
+
+
 
     return (
         <Card className="w-[600px]">
             <CardHeader>
                 <CardTitle>Let's get some data</CardTitle>
                 <CardDescription>
-                    1-Go to page page that you want to scrape in pagesjaunes.fr <br />
-                    2-copy link that you awnt to scrape <br />
-                    3-link should start with https://www.pagesjaunes.fr/annuaire
+                    1- Select the Activites you want to scrape.
+                    2- Choose the starting page number.
+                    3- Select the number of pages to scrape (between 1 and 5).
+                    4- Choose the type of data (B2B, B2C, or All).
+                    5- start scraping.
                     <br />
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit}>
                     <div className="grid w-full items-center gap-4">
-                        <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="url">URL</Label>
-                            <Input
-                                id="url"
-                                name="url"
-                                placeholder="Paste URL Here"
-                                required
-                                value={url}
-                                onChange={e => setUrl(e.target.value)}
-                            />
-                            {(ATError && ATError.type === "url") && <p className="text-red-500 text-xs font-semibold pl-4">{ATError.message}</p>}
+                    <div className="flex flex-col space-y-1.5">
+                            <Label htmlFor="sortOption">
+                                Activites
+                            </Label>
+                            <Select name="sortOption" 
+                            required>
+                                <SelectTrigger id="sortOption">
+                                    <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent position="popper">
+                                    <SelectItem value="Boulangeries">Boulangeries</SelectItem>
+                                    <SelectItem value="Fleuristes">Fleuristes</SelectItem>
+                                    <SelectItem value="Restaurants">Restaurants</SelectItem>
+                                    <SelectItem value="Médecins">Médecins</SelectItem>
+                                    <SelectItem value="Coiffeurs">Coiffeurs</SelectItem>
+                                    <SelectItem value="Garages">Garages</SelectItem>
+                                    <SelectItem value="Super marchés">Super marchés</SelectItem>
+                                    <SelectItem value="Dentistes">Dentistes</SelectItem>
+                                    <SelectItem value="Serruriers">Serruriers</SelectItem>
+                                    <SelectItem value="Bricolage">Bricolage</SelectItem>
+                                    <SelectItem value="Mairies">Mairies</SelectItem>
+                                    <SelectItem value="Cafés">Cafés</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="startPage">Start page</Label>
+                            <Label htmlFor="startPage" className='text-red-700 dark:text-green-100'>Start page</Label>
                             <Input
                                 id="startPage"
                                 name="startPage"
@@ -89,8 +90,8 @@ export function SearchForm({
                                 max={10} // maximum value
                                 placeholder="Start scraping from (1 to 10)"
                                 required
-                                value={startPage}
-                                onChange={e => setStartPage(e.target.value)}
+                                // value={startPage}
+                                // onChange={e => setstartPage(e.target.value)}
                             />
                         </div>
                         <div className="flex flex-col space-y-1.5">
@@ -101,30 +102,14 @@ export function SearchForm({
                                 name="endPage"
                                 min={1} // minimum value
                                 max={10} // maximum value
-                                defaultValue={"1"}
                                 placeholder="Limit scraping from (1 to 10)"
+                                // value={limitPage}
+                                // onChange={e=>setlimitPage(e.target.value)}
                                 required
                             />
                         </div>
-                        <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="sortOption">
-                                Sort Options
-                            </Label>
-                            <Select name="sortOption" value={sortOption} onValueChange={(option) => setSortOption(option)} required>
-                                <SelectTrigger id="sortOption">
-                                    <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent position="popper">
-                                    <SelectItem value="PERTINENCE-ASC">
-                                        PERTINENCE
-                                    </SelectItem>
-                                    <SelectItem value="NOTE_GLOBALE-DESC" >NOTE</SelectItem>
-                                    <SelectItem value="NOMBRE_GLOBAL_AVIS-DESC">NOMBRE D'AVIS</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
                         <div>
-                            <RadioGroup defaultValue="ALL" name="businessType" className="flex flex-row gap-4">
+                            <RadioGroup defaultValue="ALL" name="type" className="flex flex-row gap-4">
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="B2B" id="r1" />
                                     <Label htmlFor="r1">B2B</Label>

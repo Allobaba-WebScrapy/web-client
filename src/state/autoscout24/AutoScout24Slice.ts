@@ -5,7 +5,7 @@ import { replaceErrorNotFoundWithDashs } from '@/lib/autoscout24utils';
 
 
 
-interface RequestDataState {
+export interface RequestDataState {
   url: string;
   businessType: string;
   startPage: number;
@@ -14,7 +14,6 @@ interface RequestDataState {
 }
 
 interface ProductType {
-  selected: boolean;
   url:string,
   data:{
     title: string;
@@ -126,41 +125,11 @@ const autoscout24Slice = createSlice({
         }
     
     },
-    updateProductSelectedState: (state, action: PayloadAction<{index:number,value:boolean}>) => {
-      state.cars[action.payload.index].selected = action.payload.value;
-    },
-    removeSelectedProducts: (state) => {
-      state.cars = state.cars.filter((car) => !car.selected); 
-    },
-    sortProducts: (state,action:PayloadAction<string>) => {
-      switch (action.payload) {
-        case 'title':
-          state.cars = state.cars.sort((a, b) => a.data.title.localeCompare(b.data.title));
-          break;
-        case 'model':
-          state.cars = state.cars.sort((a, b) => a.data.model.localeCompare(b.data.model));
-          break;
-        case 'vendor':
-          state.cars = state.cars.sort((a, b) => a.data.vendor_info.name.localeCompare(b.data.vendor_info.name));
-          break;
-        case 'company':
-          state.cars = state.cars.sort((a, b) => a.data.vendor_info.company.localeCompare(b.data.vendor_info.company));
-          break;
-        case 'numbers':
-          state.cars = state.cars.sort((a, b) => a.data.vendor_info.numbers[0].localeCompare(b.data.vendor_info.numbers[0]));
-          break;
-        case 'address':
-          state.cars = state.cars.sort((a, b) => a.data.vendor_info.address.text.localeCompare(b.data.vendor_info.address.text));
-          break;
-        case 'pro':
-          state.cars = state.cars.sort((a, b) => a.data.vendor_info.pro.toString().localeCompare(b.data.vendor_info.pro.toString()));
-          break;
-        default:
-          break;
-      }
+    removeSelectedProducts: (state,action:PayloadAction<string[]>) => {
+      state.cars = state.cars.filter(car => !action.payload.includes(JSON.stringify(car))); 
     }
-  }
-  });
+    
+  }});
 
 
 export const scrapData = createAsyncThunk(
@@ -168,7 +137,7 @@ export const scrapData = createAsyncThunk(
   async () => {
     try {
       store.dispatch(setLoading(true));
-      store.dispatch(addActionToHistory("Send Request"));
+      store.dispatch(addActionToHistory("Sending Request"));
       const requestData = store.getState().autoscout24.requestData; 
       const requestOptions = {
         method: "POST",
@@ -202,11 +171,10 @@ export const scrapData = createAsyncThunk(
 
         const decodedChunk = decoder.decode(value, { stream: true });
         const obj = JSON.parse(decodedChunk);
-        console.log("--- PRODUCT:",obj);
+        console.log("--- Yielded Response:",obj);
         if (obj.url !== undefined) {
           if (!store.getState().autoscout24.uniqueObjects.includes(decodedChunk)) {
             store.dispatch(addUniqueObject(decodedChunk));
-            obj["selected"] = false;
             obj["data"] = replaceErrorNotFoundWithDashs(obj["data"])
             store.dispatch(addCar(obj));
           } else {
@@ -242,6 +210,6 @@ export const scrapData = createAsyncThunk(
 
 
 
-export const { setRequestData,addActionToHistory,sortProducts,removeSelectedProducts,updateProductSelectedState,addCar,setError,addOldRequest,setInfo,setLoading,addUniqueObject,findDublicateNumbers } = autoscout24Slice.actions;
+export const { setRequestData,addActionToHistory,removeSelectedProducts,addCar,setError,addOldRequest,setInfo,setLoading,addUniqueObject,findDublicateNumbers } = autoscout24Slice.actions;
 
 export default autoscout24Slice.reducer;
