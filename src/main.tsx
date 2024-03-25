@@ -29,6 +29,7 @@ import AutoScout24 from "./pages/AutoScout24.tsx";
 import Orange from "./pages/Orange.tsx";
 // PagesJaunes
 import PagesJaunes from "./pages/PagesJaunes.tsx";
+import { ThemeProvider } from "./components/theme-provider.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -60,7 +61,10 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      
       <RouterProvider router={router} />
+    </ThemeProvider>
     </Provider>
   </React.StrictMode>
 );
