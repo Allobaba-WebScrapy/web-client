@@ -137,7 +137,7 @@ export const scrapData = createAsyncThunk(
   async () => {
     try {
       store.dispatch(setLoading(true));
-      store.dispatch(addActionToHistory("Send Request"));
+      store.dispatch(addActionToHistory("Sending Request"));
       const requestData = store.getState().autoscout24.requestData; 
       const requestOptions = {
         method: "POST",

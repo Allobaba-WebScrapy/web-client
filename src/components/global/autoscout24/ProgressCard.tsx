@@ -58,7 +58,7 @@ export function ProgressCard({ className, ...props }: ProgressCardProps) {
                 )}
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">{task}</p>
+                <p className="text-sm font-medium leading-none capitalize">{task}</p>
               </div>
             </div>
           ))}
