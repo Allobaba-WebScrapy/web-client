@@ -48,7 +48,7 @@ const router = createBrowserRouter(
           element={<ScrapyPagesLayout />}
 
         >
-          <Route path="orange" element={<Orange />} />
+          <Route path="orange/*" element={<Orange />} />
           <Route path="pagesjaunes/*" element={<PagesJaunes />} />
           <Route path="autoscout24" element={<AutoScout24 />} />
         </Route>
