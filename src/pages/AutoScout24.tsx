@@ -108,19 +108,21 @@ const AutoScout24 = () => {
   return (
     <div className="flex flex-col w-full items-center">
       <Toaster />
-      <div className="flex gap-2 w-full h-fit justify-center ">
+      <div className="flex flex-col gap-2 w-full h-fit justify-center 2xl:flex-row items-center 2xl:items-start">
         <div className="">
           <ScrapySearchCar handleSubmit={handleSubmit} />
         </div>
-        <div className="flex flex-col gap-2 ">
-          <ProgressCard />
-          {!isLoading && <InfoCard />}
-        </div>
-        <div>
-          <ProductsDownloadCard />
+        <div className="flex flex-col md:flex-row gap-2">
+          <div className="flex flex-col gap-2 ">
+            <ProgressCard />
+            {!isLoading && <InfoCard />}
+          </div>
+          <div>
+            <ProductsDownloadCard />
+          </div>
         </div>
       </div>
-      <div className="mt-8">
+      <div className="mt-8 w-[100vw] overflow-x-scroll">
         <ProductsTable />
       </div>
     </div>

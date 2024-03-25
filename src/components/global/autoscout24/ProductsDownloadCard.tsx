@@ -13,7 +13,7 @@ const ProductsDownloadCard: React.FC<ProductsDownloadCardProps> = () => {
   const cars = useSelector((state: RootState) => state.autoscout24.cars);
 
   return (
-    <Card className={"w-[380px]"}>
+    <Card className={"w-[380px] sm:w-[600px] md:w-[380px]"}>
       <CardHeader className="gap-4">
         <CardTitle className="text-xl ">Download</CardTitle>
       </CardHeader>
