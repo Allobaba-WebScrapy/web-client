@@ -1,5 +1,5 @@
 import React from 'react';
-import { addCard, addOldRequest, addUniqueObject, findDublicateNumbers, setError, setProgress, clearProgress, setLoading, setRequestData, updateProgressCardNumbersForEachPage, RequestDataState } from "@/state/orange/OrangeSlice";
+import { addCard, addOldRequest, addUniqueObject, setError, setProgress, clearProgress, setLoading, setRequestData, updateProgressCardNumbersForEachPage, RequestDataState } from "@/state/orange/OrangeSlice";
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useToast } from '@/components/ui/use-toast';
@@ -11,8 +11,7 @@ import LoadingPage from '@/components/global/orange/LoadingPage';
 function MyForm() {
 
   const uniqueObjects = useSelector((state: RootState) => state.orange.uniqueObjects);
-  const cards = useSelector((state: RootState) => state.orange.cards);
-  const isLoading = useSelector((state: RootState) => state.orange.loading);
+
   const oldRequestData = useSelector((state: RootState) => state.orange.oldRequests);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
