@@ -1,84 +1,144 @@
-import  { useState } from 'react';
+import React from 'react';
+import { addCard, addOldRequest, addUniqueObject, setError, setProgress, clearProgress, setLoading, setRequestData, updateProgressCardNumbersForEachPage, RequestDataState } from "@/state/orange/OrangeSlice";
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useToast } from '@/components/ui/use-toast';
+import { AppDispatch, RootState } from '@/state/store';
+import { SearchForm } from '@/components/global/orange/SearchForm';
+import LoadingPage from '@/components/global/orange/LoadingPage';
+
 
 function MyForm() {
-  const [activitesName, setActivitesName] = useState('');
-  const [type, setType] = useState('');
-  const [startPage, setstartPage] = useState('');
-  const [limitPage, setlimitPage] = useState('');
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const scrape = async (e:any) => {
-    e.preventDefault();
+  const uniqueObjects = useSelector((state: RootState) => state.orange.uniqueObjects);
+
+  const oldRequestData = useSelector((state: RootState) => state.orange.oldRequests);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const { toast } = useToast()
+
+  // eslint-disible-next-line @typescript-eslint/no-explicit-any
+  const scrape = async (request:RequestDataState) => {
+    dispatch(setLoading(true))
+    dispatch(clearProgress())
     // Send the URLs to the server with fetch
-    fetch("http://localhost:5200/setup", {
+    fetch("http://localhost:4000/setup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ "activites_name": activitesName, "type": type, "start_pages": startPage, "limit_pages": limitPage }),
+      body: JSON.stringify(request),
     })
       .then(() => {
+        navigate("/scrapy/orange/loading")
         // Start the EventSource connection
-        const eventSource = new EventSource("http://localhost:5200/scrape");
+        const eventSource = new EventSource("http://localhost:4000/scrape");
 
         eventSource.addEventListener("done", function () {
           // Close the connection when the 'done' event is received
-          console.log("Received done event, closing connection.");
+          dispatch(setProgress({ type: "progress",message: "Scraping is done" }))
+          dispatch(setLoading(false))
           eventSource.close();
         });
 
         eventSource.onmessage = function (event) {
-          const data = JSON.parse(event.data);
-          console.log(data);
+          const obj = JSON.parse(event.data);
+          if(obj.type==="progress"){
+            dispatch(setProgress(JSON.parse(event.data)));
+          }
+          else if(obj.type==="error"){
+            dispatch(setProgress(JSON.parse(event.data)));
+            dispatch(setLoading(false))
+            eventSource.close();
+          }
+          else if(obj.type==="response"){
+              if (!uniqueObjects.includes(event.data)) {
+                  dispatch(addUniqueObject(event.data))
+                  // newCard["selected"] = false;
+                  dispatch(addCard(obj));
+                  dispatch(updateProgressCardNumbersForEachPage());
+              } else {
+                  toast({
+                      variant: "destructive",
+                      title: "Card is already in the table.",
+                      description: "The duplicate version doesn't added to table!",
+                  });
+                  console.log("duplicated");
+              }
+          }
         };
-        eventSource.onerror = function (error) {
-          console.error("EventSource failed:", error);
+
+        eventSource.onerror = function () {
+          dispatch(setProgress({ type: "error", progress: "EventSource failed" }));
+          dispatch(setLoading(false))
           eventSource.close();
         };
       })
-      .catch((error) => {
-        console.error("Error:", error);
+      .catch(() => {
+        dispatch(setProgress({ type: "error", progress: "Fetch Connection Error" }));
+        dispatch(setLoading(false))
       });
   };
 
 
+
+  // Handle the form submit
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch(setError(null))
+
+    const form_data: { [k: string]: string | number | FormDataEntryValue } = Object.fromEntries(new FormData(e.currentTarget));
+    form_data.startPage = form_data.startPage as string;
+    form_data.endPage = form_data.endPage as string;
+    form_data.sortOption = form_data.sortOption as string;
+    form_data.type = form_data.type as string;
+    // Process Url and set Request Data
+    const request = { "activites_name": form_data.sortOption, "type":form_data.type, "start_pages": parseInt(form_data.startPage), "limit_pages": parseInt(form_data.endPage) }
+    // Check if the url is already scraped
+    if (oldRequestData.includes(JSON.stringify(form_data))) {
+        const confirm = window.confirm('You have already scraped this url! Do you want to continue?');
+        if (confirm) {
+            dispatch(setRequestData(request));
+            scrape(request)
+        } else {
+
+            return
+        }
+    } else {
+        dispatch(setRequestData(request));
+        dispatch(addOldRequest());
+        scrape(request)
+    }
+}
+
+
   return (
-    <form onSubmit={(e) => scrape(e)}>
-
-      {/* ACTIVITIES NAME */}
-      <select value={activitesName} onChange={e => setActivitesName(e.target.value)} className="border border-gray-300 rounded-md p-2 mb-2">
-        <option value="">Select an option</option>
-        <option value="Boulangeries">Boulangeries</option>
-        <option value="Fleuristes">Fleuristes</option>
-        <option value="Restaurants">Restaurants</option>
-        <option value="Médecins">Médecins</option>
-        <option value="Coiffeurs">Coiffeurs</option>
-        <option value="Garages">Garages</option>
-        <option value="Super marchés">Super marchés</option>
-        <option value="Dentistes">Dentistes</option>
-        <option value="Serruriers">Serruriers</option>
-        <option value="Bricolage">Bricolage</option>
-        <option value="Mairies">Mairies</option>
-        <option value="Cafés">Cafés</option>
-      </select>
-
-      {/* TYPE(B2B/B2C/All) */}
-      <div className="mb-2">
-        <input type="radio" id="b2b" name="type" value="B2B" checked={type === 'B2B'} onChange={e => setType(e.target.value)} className="border border-gray-300 rounded-md p-2" />
-        <label htmlFor="b2b">B2B</label>
-        <input type="radio" id="b2c" name="type" value="B2C" checked={type === 'B2C'} onChange={e => setType(e.target.value)} className="border border-gray-300 rounded-md p-2" />
-        <label htmlFor="b2c">B2C</label>
-        <input type="radio" id="all" name="type" value="All" checked={type === 'All'} onChange={e => setType(e.target.value)} className="border border-gray-300 rounded-md p-2" />
-        <label htmlFor="all">All</label>
-      </div>
-
-      {/* NUMBER OF PAGES */}
-      <input type="text" value={startPage} onChange={e => setstartPage(e.target.value)} placeholder="Start Page" className="border border-gray-300 rounded-md p-2 mb-2" />
-      <input type="text" value={limitPage} onChange={e => setlimitPage(e.target.value)} placeholder="Limit Page" className="border border-gray-300 rounded-md p-2 mb-2" />
-
-      {/* SUBMIT BUTTON */}
-      <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Submit</button>
-    </form>
+    <div className="flex flex-col w-full items-center justify-center">
+    {/* <Toaster /> */}
+    <Routes>
+        <Route path="/" element={
+            <React.Fragment>
+                <div>
+                    <SearchForm handleSubmit={handleSubmit} />
+                </div>
+            </React.Fragment>
+        } />
+        <Route path="loading" element={
+            <React.Fragment>
+                <div>
+                    <LoadingPage scrape={scrape} />
+                </div>
+            </React.Fragment>
+        } />
+        <Route path="results" element={
+            <React.Fragment>
+                <div className="flex items-center">
+                    {/* <CarsTable /> */}
+                </div>
+            </React.Fragment>
+        } />
+    </Routes>
+</div>
   );
 }
 
