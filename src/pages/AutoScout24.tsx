@@ -1,6 +1,7 @@
-import { CarsTable } from "@/components/global/autoscout24/CarsTable";
+// import { CarsTable } from "@/components/global/autoscout24/CarsTable";
 import InfoCard from "@/components/global/autoscout24/InfoCard";
 import ProductsDownloadCard from "@/components/global/autoscout24/ProductsDownloadCard";
+import ProductsTable from "@/components/global/autoscout24/ProductsTable";
 import { ProgressCard } from "@/components/global/autoscout24/ProgressCard";
 import { ScrapySearchCar } from "@/components/global/autoscout24/SearchCard";
 import { Toaster } from "@/components/ui/toaster";
@@ -95,7 +96,7 @@ const AutoScout24 = () => {
         </div>
       </div>
       <div className="mt-8">
-        <CarsTable />
+        <ProductsTable />
       </div>
     </div>
   );
