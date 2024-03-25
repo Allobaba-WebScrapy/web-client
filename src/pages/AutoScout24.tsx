@@ -1,33 +1,21 @@
 import { CarsTable } from "@/components/global/autoscout24/CarsTable";
 import InfoCard from "@/components/global/autoscout24/InfoCard";
+import ProductsDownloadCard from "@/components/global/autoscout24/ProductsDownloadCard";
+import { ProgressCard } from "@/components/global/autoscout24/ProgressCard";
 import { ScrapySearchCar } from "@/components/global/autoscout24/SearchCard";
-import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
-import { useToast } from "@/components/ui/use-toast";
-import { downloadProductasAsCsv, downloadProductsAsJson } from "@/lib/autoscout24utils";
 import {
-  addCar,
   addOldRequest,
-  addUniqueObject,
   findDublicateNumbers,
+  scrapData,
   setError,
-  setInfo,
-  setLoading,
   setRequestData,
-  setRequestState,
 } from "@/state/autoscout24/AutoScout24Slice";
 import { AppDispatch, RootState } from "@/state/store";
 import { useEffect } from "react";
-
 import { useSelector, useDispatch } from "react-redux";
 
 const AutoScout24 = () => {
-  const requestData = useSelector(
-    (state: RootState) => state.autoscout24.requestData
-  );
-  const uniqueObjects = useSelector(
-    (state: RootState) => state.autoscout24.uniqueObjects
-  );
   const isLoading = useSelector(
     (state: RootState) => state.autoscout24.loading
   );
@@ -35,87 +23,12 @@ const AutoScout24 = () => {
     (state: RootState) => state.autoscout24.oldRequests
   );
   const dispatch = useDispatch<AppDispatch>();
-  const { toast } = useToast();
 
-  useEffect(() => {
-    if (!isValidUrl(requestData.url)) return;
-    const fetchData = async () => {
-      try {
-        dispatch(setLoading(true));
-        const requestOptions = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            url: requestData.url,
-            startPage: requestData.startPage,
-            offersNumber: requestData.offers,
-            waitingTime: requestData.waitingTime,
-            businessType: requestData.businessType,
-          }),
-        };
-        const response = await fetch(
-          "https://clownfish-app-uy5m7.ondigitalocean.app/scrape",
-          requestOptions
-        );
-        if (!response.ok || !response.body) {
-          throw response.statusText;
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) {
-            dispatch(setLoading(false));
-            break;
-          }
-
-          const decodedChunk = decoder.decode(value, { stream: true });
-          const obj = JSON.parse(decodedChunk);
-          console.log(obj);
-          if (obj.url !== undefined) {
-            if (!uniqueObjects.includes(decodedChunk)) {
-              dispatch(addUniqueObject(decodedChunk));
-              obj["selected"] = false;
-              dispatch(addCar(obj));
-            } else {
-              toast({
-                variant: "destructive",
-                title: "Product is already in the table.",
-                description: "The duplicate version doesn't added to table!",
-              });
-              console.log("duplicated");
-            }
-          } else if (obj.error) {
-            dispatch(setError(obj.error));
-            toast({
-              variant: "destructive",
-              title: "Request blocked.",
-              description: obj.error,
-            });
-            console.log(obj.error);
-            setLoading(false);
-          } else if (obj.type === "result_info") {
-            dispatch(setInfo(obj.data));
-          } else if (obj.type === "progress") {
-            dispatch(setRequestState(obj.data.message));
-          }
-        }
-      } catch (error) {
-        console.log(error);
-        dispatch(setLoading(false));
-        // add later the other errors
-      }
-    };
-
-    fetchData();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requestData]);
   const isValidUrl = (url: string) => {
-    return url.trim().startsWith("https://www.autoscout24.fr/lst");
+    return (
+      url.trim().startsWith("https://www.autoscout24.fr/lst") ||
+      url.trim().startsWith("https://www.autoscout24.com/lst")
+    );
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -135,19 +48,21 @@ const AutoScout24 = () => {
       waitingTime: form_data.waitingTime,
       businessType: form_data.businessType,
     };
-    if (isValidUrl(form_data.url)) {
-      if (oldRequestData.includes(JSON.stringify(form_data))) {
+    if (isValidUrl(RequestData.url)) {
+      if (oldRequestData.includes(JSON.stringify(RequestData))) {
         const confirm = window.confirm(
           "You have already scraped this url! Do you want to continue?"
         );
         if (confirm) {
           dispatch(setRequestData(RequestData));
+          dispatch(scrapData());
         } else {
           return;
         }
       } else {
         dispatch(setRequestData(RequestData));
         dispatch(addOldRequest());
+        dispatch(scrapData());
       }
     } else {
       dispatch(
@@ -165,21 +80,23 @@ const AutoScout24 = () => {
     }
   }, [dispatch, isLoading]);
   return (
-    <div className="flex flex-col w-full items-center ">
+    <div className="flex flex-col w-full items-center">
       <Toaster />
-      <div className="flex gap-2 w-full h-fit justify-center">
-      <div >
-        <ScrapySearchCar handleSubmit={handleSubmit} />
+      <div className="flex gap-2 w-full h-fit justify-center ">
+        <div className="">
+          <ScrapySearchCar handleSubmit={handleSubmit} />
+        </div>
+        <div className="flex flex-col ">
+          <ProgressCard />
+          {!isLoading && <InfoCard />}
+        </div>
+        <div>
+          <ProductsDownloadCard />
+        </div>
       </div>
-      <div className="bg-red-100">
-        <InfoCard />
-      </div>
-      </div>
-      <div>
+      <div className="mt-8">
         <CarsTable />
       </div>
-      <Button onClick={downloadProductasAsCsv}>Download CSV</Button>
-      <Button onClick={downloadProductsAsJson}>Download Json</Button>
     </div>
   );
 };

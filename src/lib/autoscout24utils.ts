@@ -1,5 +1,7 @@
 import {store} from '@/state/store'
 
+
+
 const getCars = () => {
     const cars = store.getState().autoscout24.cars
     if (cars.length === 0) {
@@ -16,7 +18,26 @@ const downloadFile =(data:string,format:'json'|'csv')=>{
     link.setAttribute("download", `autoscout24.${format}`);
     document.body.appendChild(link); 
     link.click();
+}
 
+const removeSpecialChars = (str:string) => {
+    return str.replace(/(\r\n|\n|\r|,|;)/gm, " ")
+}
+// replace every value start with 'error' with dashs
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const replaceErrorNotFoundWithDashs = (objData: any) => {
+    for (const key in objData) {
+        if (typeof objData[key] === 'string' && objData[key].startsWith('error')) {
+            objData[key] = '- -';
+        } else if (typeof objData[key] === 'object') {
+            for (const innerKey in objData[key]) {
+                if (typeof objData[key][innerKey] === 'string' && objData[key][innerKey].startsWith('error')) {
+                    objData[key][innerKey] = '- -';
+                }
+            }
+        }
+    }
+    return objData;
 }
 
 export const downloadProductasAsCsv = () => {
@@ -26,11 +47,8 @@ export const downloadProductasAsCsv = () => {
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += 'Title,Model,Compnay,Vendor,Numbres,Address,Pro,AddressUrl,Url\n'
     cars.map((car) => {
-        csvContent += `${car.data.title.replace(/(\r\n|\n|\r|,)/gm, " ")},${car.data.model.replace(/(\r\n|\n|\r|,)/gm, " ")},${car.data.vendor_info.company.replace(/(\r\n|\n|\r|,)/gm, " ")},${car.data.vendor_info.name.replace(/(\r\n|\n|\r|,)/gm, " ")},${Array.isArray(car.data.vendor_info.numbers) ? car.data.vendor_info.numbers.map(num => num.replace(/(\r\n|\n|\r|,)/gm, " ")).join('/') : car.data.vendor_info.numbers.replace(/(\r\n|\n|\r|,)/gm, " ")},${car.data.vendor_info.address.text.replace(/(\r\n|\n|\r|,)/gm, "-")},${car.data.vendor_info.pro ? "True":"False"},${car.data.vendor_info.address.url.replace(/(\r\n|\n|\r|,)/gm, " ")},${car.url.replace(/(\r\n|\n|\r|,)/gm, " ")}\n`;
-    }).join('\n')
+        csvContent += `${removeSpecialChars(car.data.title)},${removeSpecialChars(car.data.model)},${removeSpecialChars(car.data.vendor_info.company)},${removeSpecialChars(car.data.vendor_info.name)},${Array.isArray(car.data.vendor_info.numbers) ? car.data.vendor_info.numbers.map(num => removeSpecialChars(num)).join('/') : removeSpecialChars(car.data.vendor_info.numbers)},${car.data.vendor_info.address.text.replace(/(\r\n|\n|\r|,|;)/gm, "-")},${car.data.vendor_info.pro ? "True":"False"},${car.data.vendor_info.address.url},${car.url}\n`;}).join('\n')
     downloadFile(csvContent,'csv')
-    // const encodedUri = encodeURI(csvContent)
-    // window.open(encodedUri);
 }
 
 export const downloadProductsAsJson = () => {
