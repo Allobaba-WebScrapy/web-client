@@ -74,7 +74,7 @@ export const columns: ColumnDef<ProductType>[] = [
         // make number link tel:number
         <div>
             {numbers.map((number, index) => {
-                return <div><a href={`tel:${number}`} key={index} className="text-sky-800">
+                return <div key={index}><a href={`tel:${number}`}  className="text-sky-800">
                 {number} 
                 </a>{", "}</div>
             })}
