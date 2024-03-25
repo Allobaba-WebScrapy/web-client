@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -18,9 +19,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { RootState } from "@/state/store";
-import { Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
-import React, { useEffect, useState } from 'react';
+import { Loader2 } from "lucide-react";
 
 
 interface SearchFormProps {
@@ -38,7 +38,7 @@ export function SearchForm({
     const [startPage, setStartPage] = useState("1");
     const [sortOption, setSortOption] = useState('PERTINENCE-ASC');
 
-
+    // Manage the URL structure
     useEffect(() => {
         const urlParams = new URLSearchParams(url);
         const page = urlParams.get('page') || "1";
@@ -83,7 +83,10 @@ export function SearchForm({
                             <Input
                                 id="startPage"
                                 name="startPage"
-                                placeholder="Start scraping from (? to ?)"
+                                type="number"
+                                min={1} // minimum value
+                                max={10} // maximum value
+                                placeholder="Start scraping from (1 to 10)"
                                 required
                                 value={startPage}
                                 onChange={e => setStartPage(e.target.value)}
@@ -95,8 +98,10 @@ export function SearchForm({
                                 type="number"
                                 id="endPage"
                                 name="endPage"
+                                min={1} // minimum value
+                                max={10} // maximum value
                                 defaultValue={"1"}
-                                placeholder="Limit scraping from (1 to 5)"
+                                placeholder="Limit scraping from (1 to 10)"
                                 required
                             />
                         </div>
