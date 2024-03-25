@@ -5,7 +5,6 @@ import { ArrowUpDown, ArrowUpRightFromSquare } from "lucide-react";
 
 
 export type ProductType = {
-  selected: boolean;
   url: string;
   data: {
     title: string;
