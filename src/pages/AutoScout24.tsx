@@ -5,6 +5,7 @@ import { ProgressCard } from "@/components/global/autoscout24/ProgressCard";
 import { ScrapySearchCar } from "@/components/global/autoscout24/SearchCard";
 import { Toaster } from "@/components/ui/toaster";
 import {
+  RequestDataState,
   addOldRequest,
   findDublicateNumbers,
   scrapData,
@@ -30,6 +31,33 @@ const AutoScout24 = () => {
       url.trim().startsWith("https://www.autoscout24.com/lst")
     );
   };
+  const validateForm = (RequestData: RequestDataState) => {
+    if (!isValidUrl(RequestData.url)) {
+      dispatch(
+        setError("URL should start with https://www.autoscout24.fr/lst")
+      );
+      return false;
+    } else if (Number.isNaN(RequestData.startPage)) {
+      dispatch(setError("Start page should be a number"));
+      return false;
+    } else if (RequestData.startPage < 1) {
+      dispatch(setError("Start page should be greater than 0"));
+      return false;
+    } else if (RequestData.startPage > 20) {
+      dispatch(setError("Start page should be less than 20"));
+      return false;
+    } else if (Number.isNaN(RequestData.offers)) {
+      dispatch(setError("Products should be a number"));
+      return false;
+    } else if (RequestData.offers < 1) {
+      dispatch(setError("Products should be greater than 0"));
+      return false;
+    } else if (RequestData.offers > 100) {
+      dispatch(setError("Products should be less than 100"));
+      return false;
+    }
+    return true;
+  };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(setError(null));
@@ -48,27 +76,26 @@ const AutoScout24 = () => {
       waitingTime: form_data.waitingTime,
       businessType: form_data.businessType,
     };
-    if (isValidUrl(RequestData.url)) {
-      if (oldRequestData.includes(JSON.stringify(RequestData))) {
-        const confirm = window.confirm(
-          "You have already scraped this url! Do you want to continue?"
-        );
-        if (confirm) {
-          dispatch(setRequestData(RequestData));
-          dispatch(scrapData());
-        } else {
-          return;
-        }
-      } else {
+
+    if (!validateForm(RequestData)) {
+      return;
+    }
+    if (oldRequestData.includes(JSON.stringify(RequestData))) {
+      const confirm = window.confirm(
+        "You have already scraped this url! Do you want to continue?"
+      );
+      if (confirm) {
         dispatch(setRequestData(RequestData));
-        dispatch(addOldRequest());
         dispatch(scrapData());
+      } else {
+        return;
       }
     } else {
-      dispatch(
-        setError("URL should start with https://www.autoscout24.fr/lst")
-      );
+      dispatch(setRequestData(RequestData));
+      dispatch(addOldRequest());
+      dispatch(scrapData());
     }
+
     // console.log(form_data);
     // console.log(oldRequestData);
   };
