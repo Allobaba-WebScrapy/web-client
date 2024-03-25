@@ -9,34 +9,37 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
+import { ModeToggle } from "../mode-toggle";
 
 const Navbar: React.FC = () => {
   return (
     <nav className="flex w-full h-full items-center justify-between  px-4 py-2 ">
       <Link to="/">Scrapy</Link>
       {/* <NavLink to='/'>Menu</NavLink> */}
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="secondary">
-            <span className="sr-only">Menu</span>
-            scrapy pages
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <Link to="/scrapy/autoscout24">
-            <DropdownMenuItem>AutoScout24</DropdownMenuItem>
-          </Link>
-          <DropdownMenuSeparator />
-          <Link to="/scrapy/orange">
-            <DropdownMenuItem>Orange</DropdownMenuItem>
-          </Link>
-          <DropdownMenuSeparator />
-          <Link to="/scrapy/pagesjaunes">
-            <DropdownMenuItem>PagesJaunes</DropdownMenuItem>
-          </Link>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex gap-2 items-center">
+        <ModeToggle />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="secondary">
+              <span className="sr-only">Menu</span>
+              scrapy pages
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <Link to="/scrapy/autoscout24">
+              <DropdownMenuItem>AutoScout24</DropdownMenuItem>
+            </Link>
+            <DropdownMenuSeparator />
+            <Link to="/scrapy/orange">
+              <DropdownMenuItem>Orange</DropdownMenuItem>
+            </Link>
+            <DropdownMenuSeparator />
+            <Link to="/scrapy/pagesjaunes">
+              <DropdownMenuItem>PagesJaunes</DropdownMenuItem>
+            </Link>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </nav>
   );
 };
