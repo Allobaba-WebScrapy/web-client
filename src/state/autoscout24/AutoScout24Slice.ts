@@ -5,7 +5,7 @@ import { replaceErrorNotFoundWithDashs } from '@/lib/autoscout24utils';
 
 
 
-interface RequestDataState {
+export interface RequestDataState {
   url: string;
   businessType: string;
   startPage: number;
