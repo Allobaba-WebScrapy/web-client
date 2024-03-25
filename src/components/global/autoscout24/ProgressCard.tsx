@@ -35,12 +35,12 @@ export function ProgressCard({ className, ...props }: ProgressCardProps) {
             <ProgressBar progress={progress} />
           </div>
         ) }
-        <CardTitle className="text-xl text-gray-800">Actions History</CardTitle>
+        <CardTitle className="text-xltext-gray-800">Actions History</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div>
           {actionsHistory.length === 0 && (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               No actions have been performed yet.
             </p>
           )  

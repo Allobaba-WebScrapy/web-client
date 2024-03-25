@@ -17,7 +17,7 @@ const ScrapyPagesLayout: React.FC = () => {
 
       if (window.scrollY > 10) {
         if (!isScrolledDown) {
-          setNavStyle("mt-0 px-0 bg-white rounded-none");
+          setNavStyle("mt-0 px-0  rounded-none");
         } else {
           setNavStyle("display-none  hidden");
         }

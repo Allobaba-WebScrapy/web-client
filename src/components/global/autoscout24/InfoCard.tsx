@@ -16,7 +16,7 @@ const InfoCard: React.FC<InfoCardProps> = () => {
   return (
     <Card className={"w-[380px] flex-grow"}>
       <CardHeader className="gap-4">
-        <CardTitle className="text-xl text-gray-800">Response Info</CardTitle>
+        <CardTitle className="text-xl ">Response Info</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div>
