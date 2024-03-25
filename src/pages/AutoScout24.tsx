@@ -85,7 +85,7 @@ const AutoScout24 = () => {
         <div className="">
           <ScrapySearchCar handleSubmit={handleSubmit} />
         </div>
-        <div className="flex flex-col ">
+        <div className="flex flex-col gap-2 ">
           <ProgressCard />
           {!isLoading && <InfoCard />}
         </div>

@@ -15,7 +15,7 @@ const ProductsDownloadCard: React.FC<ProductsDownloadCardProps> = () => {
   return (
     <Card className={"w-[380px]"}>
       <CardHeader className="gap-4">
-        <CardTitle className="text-xl text-gray-800">Download</CardTitle>
+        <CardTitle className="text-xl ">Download</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="flex flex-col gap-4">
