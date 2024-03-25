@@ -39,7 +39,7 @@ interface PagesJaunesState {
   progress: any;
   cardsNumbers: number;
   loading: boolean;
-  error: string | null;
+  error: { type: string; message: string } | null;
   uniqueObjects: string[];
   dublicateNumbers: string[];
   oldRequests: string[];
@@ -113,7 +113,10 @@ const pagesJaunes = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
-    setError: (state, action: PayloadAction<string | null>) => {
+    setError: (
+      state,
+      action: PayloadAction<{ type: string; message: string } | null>
+    ) => {
       state.error = action.payload;
     },
     addUniqueObject: (state, action: PayloadAction<string>) => {

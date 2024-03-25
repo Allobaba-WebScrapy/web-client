@@ -77,6 +77,7 @@ export function SearchForm({
                                 value={url}
                                 onChange={e => setUrl(e.target.value)}
                             />
+                            {(ATError && ATError.type === "url") && <p className="text-red-500 text-xs font-semibold pl-4">{ATError.message}</p>}
                         </div>
                         <div className="flex flex-col space-y-1.5">
                             <Label htmlFor="startPage">Start page</Label>
@@ -138,7 +139,6 @@ export function SearchForm({
                                 </div>
                             </RadioGroup>
                         </div>
-                        <span className="text-red-500">{ATError}</span>
                     </div>
                     <div className="flex justify-between mt-4">
                         <Button variant="outline" type="reset">

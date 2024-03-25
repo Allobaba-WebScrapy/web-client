@@ -138,7 +138,7 @@ const PagesJaunes = () => {
                 scrape(RequestData)
             }
         } else {
-            dispatch(setError('Invalid url'))
+            dispatch(setError({ type: "url", message: "Invalid URL"}))
         }
     }
 
