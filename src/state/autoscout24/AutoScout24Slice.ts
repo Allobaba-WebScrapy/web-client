@@ -129,8 +129,8 @@ const autoscout24Slice = createSlice({
     updateProductSelectedState: (state, action: PayloadAction<{index:number,value:boolean}>) => {
       state.cars[action.payload.index].selected = action.payload.value;
     },
-    removeSelectedProducts: (state) => {
-      state.cars = state.cars.filter((car) => !car.selected); 
+    removeSelectedProducts: (state,action:PayloadAction<string[]>) => {
+      state.cars = state.cars.filter(car => !action.payload.includes(JSON.stringify(car))); 
     },
     sortProducts: (state,action:PayloadAction<string>) => {
       switch (action.payload) {

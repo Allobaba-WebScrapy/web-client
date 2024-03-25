@@ -31,6 +31,9 @@ import {
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
+import { store } from "@/state/store"
+import { toast } from "@/components/ui/use-toast"
+import { removeSelectedProducts } from "@/state/autoscout24/AutoScout24Slice"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -45,6 +48,8 @@ export function DataTable<TData, TValue>({
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({})
+
+  
   const table = useReactTable({
     data,
     columns,
@@ -63,6 +68,19 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   })
+  const deleteSelectedProducts = () => {
+    const selectedRows = table.getFilteredSelectedRowModel().rows
+    if (selectedRows.length === 0) {
+      alert('No Products Selected. Please select the products first.')
+      return
+    }
+    const selectedProducts = selectedRows.map(row => JSON.stringify(row.original))
+    console.log(selectedProducts)
+    
+    store.dispatch(removeSelectedProducts(selectedProducts))
+    table.toggleAllPageRowsSelected(false)
+    toast({title:'Selected Products Deleted Successfully'})
+  }
 
   return (
     <div>
@@ -80,6 +98,7 @@ console.log(table.getGroupedSelectedRowModel().rows)
           }
           className="max-w-sm"
         />
+        <Button onClick={deleteSelectedProducts}>Delete</Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
