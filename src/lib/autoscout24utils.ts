@@ -45,9 +45,9 @@ export const downloadProductasAsCsv = () => {
     if (!cars) return
 
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += 'Title,Model,Compnay,Vendor,Numbres,Address,Pro,AddressUrl,Url\n'
+    csvContent += 'Title;Model;Compnay;Vendor;Numbres;Address;Pro;AddressUrl;Url\n'
     cars.map((car) => {
-        csvContent += `${removeSpecialChars(car.data.title)},${removeSpecialChars(car.data.model)},${removeSpecialChars(car.data.vendor_info.company)},${removeSpecialChars(car.data.vendor_info.name)},${Array.isArray(car.data.vendor_info.numbers) ? car.data.vendor_info.numbers.map(num => removeSpecialChars(num)).join('/') : removeSpecialChars(car.data.vendor_info.numbers)},${car.data.vendor_info.address.text.replace(/(\r\n|\n|\r|,|;)/gm, "-")},${car.data.vendor_info.pro ? "True":"False"},${car.data.vendor_info.address.url},${car.url}\n`;}).join('\n')
+        csvContent += `${removeSpecialChars(car.data.title)};${removeSpecialChars(car.data.model)};${removeSpecialChars(car.data.vendor_info.company)};${removeSpecialChars(car.data.vendor_info.name)};${Array.isArray(car.data.vendor_info.numbers) ? car.data.vendor_info.numbers.map(num => removeSpecialChars(num)).join('/') : removeSpecialChars(car.data.vendor_info.numbers)};${car.data.vendor_info.address.text.replace(/(\r\n|\n|\r|,|;)/gm, "-")};${car.data.vendor_info.pro ? "True":"False"};${car.data.vendor_info.address.url};${car.url}\n`;}).join('\n')
     downloadFile(csvContent,'csv')
 }
 
