@@ -1,4 +1,3 @@
-// import { CarsTable } from "@/components/global/autoscout24/CarsTable";
 import InfoCard from "@/components/global/autoscout24/InfoCard";
 import ProductsDownloadCard from "@/components/global/autoscout24/ProductsDownloadCard";
 import ProductsTable from "@/components/global/autoscout24/ProductsTable";
@@ -70,13 +69,12 @@ const AutoScout24 = () => {
         setError("URL should start with https://www.autoscout24.fr/lst")
       );
     }
-    console.log(form_data);
-    console.log(oldRequestData);
+    // console.log(form_data);
+    // console.log(oldRequestData);
   };
   // test if there is nay repeated number in cars vendor numbers
   useEffect(() => {
     if (!isLoading) {
-      console.log("test");
       dispatch(findDublicateNumbers());
     }
   }, [dispatch, isLoading]);
