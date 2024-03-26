@@ -17,10 +17,15 @@ interface RequestDataState {
   businessType: string;
 }
 
+interface Address {
+  link: string;
+  text: string;
+}
+
 interface CardInfo {
   title: string;
   activite: string;
-  address: string;
+  address: Address;
   phones: string[] | string;
 }
 
@@ -54,17 +59,34 @@ const initialState: PagesJaunesState = {
     businessType: "ALL",
   },
   cards: [
-    // {
-    //   selected: false,
-    //   card_id: "552",
-    //   card_url: "545",
-    //   info: {
-    //     title: "565",
-    //     activite: "35",
-    //     address: "233",
-    //     phones:  ["123", "456"],
-    //   },
-    // },
+    {
+      selected: false,
+      card_id: "55585842",
+      card_url: "https://www.pagesjaunes.fr/pros/56804823#zoneHoraires",
+      info: {
+        title: "ETS J.Deniel",
+        activite: "RAMONAGE",
+        address: {
+          link: "https://www.pagesjaunes.fr/pros/56804823#zoneHoraires",
+          text: "40 avenue Waltenhofen 29860 Plabennec",
+        },
+        phones: ["02 98 40 42 55"],
+      },
+    },
+    {
+      selected: false,
+      card_id: "058554457",
+      card_url: "https://www.pagesjaunes.fr/pros/08354641#zoneHoraires",
+      info: {
+        title: "Chateaulin Gaz - SARL IRCT",
+        activite: "RAMONAGE",
+        address: {
+          link: "https://www.pagesjaunes.fr/pros/08354641#zoneHoraires",
+          text: "77 rue Graveran 29150 Châteaulin",
+        },
+        phones: ["02 98 73 10 66", "06 07 06 74 70"],
+      },
+    },
   ],
   progress: [],
   cardsNumbers: 0,
@@ -94,7 +116,7 @@ const pagesJaunes = createSlice({
     updateProgressCardNumbersForEachPage: (state) => {
       // Find the last object with "Scraping url" in progress
       for (let i = state.progress.length - 1; i >= 0; i--) {
-        if (state.progress[i].progress.includes("Scraping Page")) {
+        if (state.progress[i].message.includes("Scraping Page")) {
           // Update the cardsNumbers property
           state.progress[i].cardsNumbers += 1;
           break;
@@ -149,32 +171,10 @@ const pagesJaunes = createSlice({
       console.log("select update", action.payload.index, action.payload.value);
       state.cards[action.payload.index].selected = action.payload.value;
     },
-    removeSelectedCards: (state) => {
-      state.cards = state.cards.filter((card) => !card.selected);
-    },
-    sortCards: (state, action: PayloadAction<string>) => {
-      switch (action.payload) {
-        case "title":
-          state.cards = state.cards.sort((a, b) =>
-            a.info.title.localeCompare(b.info.title)
-          );
-          break;
-        case "activite":
-          state.cards = state.cards.sort((a, b) =>
-            a.info.activite.localeCompare(b.info.activite)
-          );
-          break;
-        case "address":
-          state.cards = state.cards.sort((a, b) =>
-            a.info.address.localeCompare(b.info.address)
-          );
-          break;
-        case "numbers":
-          state.cards = state.cards.sort((a, b) =>
-            a.info.phones[0].localeCompare(b.info.phones[0])
-          );
-          break;
-      }
+    removeSelectedCards: (state, action: PayloadAction<string[]>) => {
+      state.cards = state.cards.filter(
+        (card) => !action.payload.includes(JSON.stringify(card))
+      );
     },
   },
 });
@@ -194,7 +194,6 @@ export const {
   setLoading,
   addUniqueObject,
   findDublicateNumbers,
-  sortCards,
 } = pagesJaunes.actions;
 
 export default pagesJaunes.reducer;
