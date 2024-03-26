@@ -27,7 +27,7 @@ const PagesJaunes = () => {
         console.log(RequestData);
         dispatch(setLoading(true))
         dispatch(clearProgress())
-        fetch("http://localhost:3070/setup", {
+        fetch("http://localhost:4000/setup", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -41,7 +41,7 @@ const PagesJaunes = () => {
         })
             .then(() => {
                 navigate("/scrapy/pagesjaunes/loading")
-                const eventSource = new EventSource("http://localhost:3070/stream");
+                const eventSource = new EventSource("http://localhost:4000/stream");
 
                 //! ------------------- Get the progress from the server -------------------
                 eventSource.addEventListener('progress', function (event) {
