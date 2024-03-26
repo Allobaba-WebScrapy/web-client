@@ -87,11 +87,6 @@ export const DataTable: React.FC<DataTableProps> = ({ columns, data }) => {
           placeholder="Filter Titles..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) => {
-            // console.log(table.getAllColumns())
-            // console.log(table.getState().rowSelection) //get the row selection state - { 1: true, 2: false, etc... }
-            // console.log(table.getSelectedRowModel().rows) //get full client-side selected rows
-            // console.log(table.getFilteredSelectedRowModel().rows) //get filtered client-side selected rows
-            // console.log(table.getGroupedSelectedRowModel().rows)
             return table
               .getColumn("title")
               ?.setFilterValue(event.target.value);
