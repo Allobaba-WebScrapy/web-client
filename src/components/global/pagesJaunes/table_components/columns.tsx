@@ -3,6 +3,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, ArrowUpRightFromSquare } from "lucide-react";
 import { CardType } from "@/state/pagesJaunes/PagesJaunesSlice";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ChevronDown } from 'lucide-react';
 
 
 
@@ -42,7 +51,7 @@ export const columns: ColumnDef<CardType>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Title
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="ml-2 h-4 w-4 scale-[70%]" />
         </Button>
       )
     },
@@ -56,12 +65,26 @@ export const columns: ColumnDef<CardType>[] = [
       return <div>
         {Array.isArray(phones) ?
           // make number link tel:number
-          <div>
-            {phones.map((phone, index) => {
-              return <div key={index}><a href={`tel:${phone}`} className="text-sky-800">
-                {phone}
-              </a>{", "}</div>
-            })}
+          <div className="flex flex-col justify-center items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline"><span className="font-semibold text-primary">{phones.length}</span>&nbsp;Phones Numbers <ChevronDown style={{ scale: "0.7" }} /></Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                {phones.map((phone, index) => {
+                  return (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem key={index}>
+                        <a href={`tel:${phone}`} className="font-semibold text-primary">
+                          {phone}
+                        </a>
+                      </DropdownMenuItem>
+                    </>
+                  )
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           : "---"}
       </div>
@@ -79,7 +102,7 @@ export const columns: ColumnDef<CardType>[] = [
     cell: ({ row }) => {
       const url = row.original.info.address.link;
       const address = row.original.info.address.text;
-      return <a href={url} target="_blank" rel="noopener noreferrer" className="text-sky-800">
+      return <a href={url} target="_blank" rel="noopener noreferrer" className="text-sky-600">
         {address}
       </a>
     },
