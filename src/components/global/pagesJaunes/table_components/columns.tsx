@@ -67,19 +67,24 @@ export const columns: ColumnDef<CardType>[] = [
           <div className="flex flex-col justify-center items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline"><span className="font-semibold text-primary">{phones.length}</span>&nbsp;Phones Numbers <ChevronDown style={{ scale: "0.7" }} /></Button>
+                <Button variant="outline">
+                  <>
+                    <span className="font-semibold text-primary">
+                      {phones.length}</span>&nbsp;{phones.length <= 1 ? "Phone Number" : "Phones Numbers"} <ChevronDown style={{ scale: "0.7" }} />
+                  </>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56">
                 {phones.map((phone, index) => {
                   return (
-                    <>
+                    <div key={index}>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem key={index}>
+                      <DropdownMenuItem>
                         <a href={`tel:${phone}`} className="font-semibold text-primary">
                           {phone}
                         </a>
                       </DropdownMenuItem>
-                    </>
+                    </div>
                   )
                 })}
               </DropdownMenuContent>
