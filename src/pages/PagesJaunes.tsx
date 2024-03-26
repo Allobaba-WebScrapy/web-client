@@ -1,4 +1,4 @@
-import { CarsTable } from "@/components/global/pagesJaunes/CardsTable";
+import CardsTable from "@/components/global/pagesJaunes/CardsTable";
 import { SearchForm } from "@/components/global/pagesJaunes/SearchForm";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
@@ -24,10 +24,10 @@ const PagesJaunes = () => {
     const scrape = async (RequestData: any) => {
         if (!isValidUrl(RequestData.url) || !true) return
         console.log("Scraping...")
-        console.log(RequestData);
         dispatch(setLoading(true))
         dispatch(clearProgress())
-        fetch("http://localhost:3070/setup", {
+        navigate("/scrapy/pagesjaunes/loading")
+        fetch("http://localhost:4000/setup", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -40,15 +40,16 @@ const PagesJaunes = () => {
             }),
         })
             .then(() => {
-                navigate("/scrapy/pagesjaunes/loading")
-                const eventSource = new EventSource("http://localhost:3070/stream");
+                const eventSource = new EventSource("http://localhost:4000/stream");
 
                 //! ------------------- Get the progress from the server -------------------
                 eventSource.addEventListener('progress', function (event) {
                     console.log(JSON.parse(event.data));
                     dispatch(setProgress(JSON.parse(event.data)));
                 });
-                //! --------------------- Get the data from the server --------------------
+                //! --------------------- Get the data from the server -----------------
+
+
                 eventSource.onmessage = function (event) {
                     const obj = JSON.parse(event.data);
                     if (obj.card_url !== undefined) {
@@ -70,7 +71,7 @@ const PagesJaunes = () => {
                 }
                 //! ------------------- Get the done event from the server -------------------
                 eventSource.addEventListener("done", function () {
-                    dispatch(setProgress({ type: "progress", progress: "Scraping is done" }))
+                    dispatch(setProgress({ type: "progress", message: "Scraping is done" }))
                     dispatch(setLoading(false))
                     eventSource.close();
                 });
@@ -81,14 +82,13 @@ const PagesJaunes = () => {
                     eventSource.close();
                 });
                 eventSource.onerror = function () {
-                    dispatch(setProgress({ type: "error", progress: "EventSource failed" }));
+                    dispatch(setProgress({ type: "error", message: "EventSource failed" }));
                     dispatch(setLoading(false))
                     eventSource.close();
                 };
             })
             .catch((error) => {
-                console.error({ type: "error", progress: error.message });
-                dispatch(setProgress({ type: "error", progress: "Fetch Connection Error" }));
+                dispatch(setProgress({ type: "error", message: error.message }));
                 dispatch(setLoading(false))
             });
     };
@@ -138,7 +138,7 @@ const PagesJaunes = () => {
                 scrape(RequestData)
             }
         } else {
-            dispatch(setError({ type: "url", message: "Invalid URL"}))
+            dispatch(setError({ type: "url", message: "Invalid URL" }))
         }
     }
 
@@ -172,7 +172,7 @@ const PagesJaunes = () => {
                 <Route path="results" element={
                     <React.Fragment>
                         <div className="flex items-center">
-                            <CarsTable />
+                            <CardsTable />
                         </div>
                     </React.Fragment>
                 } />
