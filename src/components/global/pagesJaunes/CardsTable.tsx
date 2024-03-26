@@ -5,7 +5,7 @@ import { RootState } from "@/state/store";
 
 
 
-export default function CardsTable() {
+export function CardsTable() {
   const data = useSelector((state: RootState) => state.pagesJaunes.cards);
 
   return (
