@@ -72,7 +72,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
                                         {step.message}
                                     </p>
                                     {step.cardsNumbers !== undefined && (
-                                        <p className="font-normal text-black">
+                                        <p className="font-normal">
                                             {step.cardsNumbers} cards scraped / 20
                                         </p>
                                     )}
