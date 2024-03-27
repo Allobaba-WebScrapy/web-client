@@ -18,12 +18,12 @@ import {
     downloadCardsAsCsv,
     downloadCardsAsJson,
     downloadCardsAsXml,
-} from "@/lib/pagesjaunes_utils";
+} from "@/lib/orange_utils";
 
 type Step = {
     type: string;
-    message?: string;
-    proccess?: any;
+    message: string;
+    card_progress?: any;
 };
 type CardProps = React.ComponentProps<typeof Card>;
 type ScrapeFunction = (requestData: any) => Promise<void>;
@@ -71,9 +71,9 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
                                     <p className="text-sm font-medium leading-none">
                                         {step.message}
                                     </p>
-                                    {step.proccess !== undefined && (
-                                        <p className="font-normal text-black">
-                                            {step.proccess.nCard}/{step.proccess.length}
+                                    {step.card_progress !== undefined && (
+                                        <p className="font-normal">
+                                            {step.card_progress.nCard}/{step.card_progress.length}
                                         </p>
                                     )}
                                     <p className={`text-sm text-muted-foreground ${step.type === "progress" ? "text-green-500" : "text-red-500"}`}>{step.type}</p>
