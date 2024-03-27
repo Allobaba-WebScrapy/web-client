@@ -91,7 +91,7 @@ export const DataTable: React.FC<DataTableProps> = ({ columns, data }) => {
               .getColumn("title")
               ?.setFilterValue(event.target.value);
           }}
-          className="max-w-sm"
+          className="max-w-xs"
         />
 
         <DropdownMenu>

@@ -90,7 +90,7 @@ export const columns: ColumnDef<CardType>[] = [
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          : "---"}
+          : "_ _ _ _"}
       </div>
     },
   },
