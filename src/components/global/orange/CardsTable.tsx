@@ -9,7 +9,7 @@ export default function CardsTable() {
   const data = useSelector((state: RootState) => state.orange.cards);
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="w-[100vw] rounded-md overflow-x-scroll">
       <DataTable columns={columns} data={data} />
     </div>
   )
