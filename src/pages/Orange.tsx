@@ -133,7 +133,7 @@ function MyForm() {
         <Route path="results" element={
             <React.Fragment>
                 <div className="flex items-center">
-                    {/* <CarsTable /> */}
+                  {/* ... Table Component */}
                 </div>
             </React.Fragment>
         } />
