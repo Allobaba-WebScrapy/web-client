@@ -1,4 +1,4 @@
-import { CarsTable } from "@/components/global/pagesJaunes/CardsTable";
+import CarsTable from "@/components/global/pagesJaunes/CardsTable";
 import { SearchForm } from "@/components/global/pagesJaunes/SearchForm";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";

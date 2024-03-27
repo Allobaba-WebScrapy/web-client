@@ -167,7 +167,7 @@ export function downloadCardsAsCsv() {
           ? [
               card.info.title.replace(/(\r\n|\n|\r|,)/gm, " "),
               card.info.activite.replace(/(\r\n|\n|\r|,)/gm, " "),
-              card.info.address.replace(/(\r\n|\n|\r|,)/gm, " "),
+              card.info.address.text.replace(/(\r\n|\n|\r|,)/gm, " "),
               card.info.phones instanceof Array
                 ? card.info.phones
                     .map((phone) => phone.replace(/(\r\n|\n|\r|,)/gm, " "))
