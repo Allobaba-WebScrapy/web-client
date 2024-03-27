@@ -6,6 +6,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { AppDispatch, RootState } from '@/state/store';
 import { SearchForm } from '@/components/global/orange/SearchForm';
 import LoadingPage from '@/components/global/orange/LoadingPage';
+import CardsTable from '@/components/global/orange/CardsTable';
 
 
 function MyForm() {
@@ -134,6 +135,7 @@ function MyForm() {
             <React.Fragment>
                 <div className="flex items-center">
                   {/* ... Table Component */}
+                  <CardsTable />
                 </div>
             </React.Fragment>
         } />
