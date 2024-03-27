@@ -81,7 +81,7 @@ export function SearchForm({
                             </Select>
                         </div>
                         <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="startPage" className='text-red-700 dark:text-green-100'>Start page</Label>
+                            <Label htmlFor="startPage">Start page</Label>
                             <Input
                                 id="startPage"
                                 name="startPage"
