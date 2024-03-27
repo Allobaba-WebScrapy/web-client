@@ -58,36 +58,7 @@ const initialState: PagesJaunesState = {
     endPage: 1,
     businessType: "ALL",
   },
-  cards: [
-    {
-      selected: false,
-      card_id: "55585842",
-      card_url: "https://www.pagesjaunes.fr/pros/56804823#zoneHoraires",
-      info: {
-        title: "ETS J.Deniel",
-        activite: "RAMONAGE",
-        address: {
-          link: "https://www.pagesjaunes.fr/pros/56804823#zoneHoraires",
-          text: "40 avenue Waltenhofen 29860 Plabennec",
-        },
-        phones: ["02 98 40 42 55"],
-      },
-    },
-    {
-      selected: false,
-      card_id: "058554457",
-      card_url: "https://www.pagesjaunes.fr/pros/08354641#zoneHoraires",
-      info: {
-        title: "Chateaulin Gaz - SARL IRCT",
-        activite: "RAMONAGE",
-        address: {
-          link: "https://www.pagesjaunes.fr/pros/08354641#zoneHoraires",
-          text: "77 rue Graveran 29150 Châteaulin",
-        },
-        phones: ["02 98 73 10 66", "06 07 06 74 70"],
-      },
-    },
-  ],
+  cards: [],
   progress: [],
   cardsNumbers: 0,
   loading: false,
@@ -118,19 +89,13 @@ const pagesJaunes = createSlice({
       for (let i = state.progress.length - 1; i >= 0; i--) {
         if (state.progress[i].message.includes("Scraping Page")) {
           // Update the cardsNumbers property
-          state.progress[i].cardsNumbers += 1;
+          state.progress[i].limiCard.scrapedCardsNumbers += 1;
           break;
         }
       }
     },
     clearProgress: (state) => {
       state.progress = [];
-    },
-    setCardNumbers: (state) => {
-      state.cardsNumbers += 1;
-    },
-    clearCardNumbers: (state) => {
-      state.cardsNumbers = 0;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
@@ -188,8 +153,6 @@ export const {
   addOldRequest,
   setProgress,
   clearProgress,
-  setCardNumbers,
-  clearCardNumbers,
   updateProgressCardNumbersForEachPage,
   setLoading,
   addUniqueObject,
