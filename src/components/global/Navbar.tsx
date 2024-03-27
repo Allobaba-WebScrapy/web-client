@@ -14,7 +14,12 @@ import { ModeToggle } from "../mode-toggle";
 const Navbar: React.FC = () => {
   return (
     <nav className="flex w-full h-full items-center justify-between  px-4 py-2 ">
-      <Link to="/">Scrapy</Link>
+      <Link to="/" className="flex gap-[1px]  dark:gap-0 items-center">
+        <img src="/scrapy-allobaba.png" alt="Scrapy" className="h-10" />
+        <span className="text-2xl dark:text-xl font-bold relative dark:right-1">
+          crapy
+        </span>
+      </Link>
       {/* <NavLink to='/'>Menu</NavLink> */}
       <div className="flex gap-2 items-center">
         <ModeToggle />
