@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, ArrowUpRightFromSquare } from "lucide-react";
-import { CardType } from "@/state/orange/OrangeSlice";
+import { ArrowUpDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ChevronDown } from 'lucide-react';
+import { CardType } from "@/state/orange/OrangeSlice";
 
 
 
@@ -42,7 +42,7 @@ export const columns: ColumnDef<CardType>[] = [
   },
   {
     id: 'title',
-    accessorKey: "title",
+    accessorKey: "message.title",
     header: ({ column }) => {
       return (
         <Button
@@ -57,12 +57,12 @@ export const columns: ColumnDef<CardType>[] = [
   },
   {
     id: 'phone',
-    accessorKey: "phone",
+    accessorKey: "message.phone",
     header: () => <div className="">Phones</div>,
     cell: ({ row }) => {
-      const phones = row.original.phone;
+      const phone = row.original.message.phone;
       return <div>
-        {Array.isArray(phones) ?
+        {Array.isArray(phone) ?
           // make number link tel:number
           <div className="flex flex-col justify-center items-center gap-2">
             <DropdownMenu>
@@ -70,12 +70,12 @@ export const columns: ColumnDef<CardType>[] = [
                 <Button variant="outline">
                   <>
                     <span className="font-semibold text-primary">
-                      {phones.length}</span>&nbsp;{phones.length <= 1 ? "Phone Number" : "Phones Numbers"} <ChevronDown style={{ scale: "0.7" }} />
+                      {phone.length}</span>&nbsp;Phone Numbers<ChevronDown style={{ scale: "0.7" }} />
                   </>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56">
-                {phones.map((phone, index) => {
+                {phone.map((phone, index) => {
                   return (
                     <div key={index}>
                       <DropdownMenuSeparator />
@@ -90,34 +90,38 @@ export const columns: ColumnDef<CardType>[] = [
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          : "---"}
+          : "_ _ _ _"}
       </div>
     },
   },
   {
     id: 'category',
-    accessorKey: "category",
-    header: "Activite",
+    accessorKey: "message.category",
+    header: () => <div className="">Activite</div>,
+    cell: ({ row }) => {
+      const address = row.original.message.category;
+      return <p>{address}</p>
+    },
   },
   {
     id: 'adress',
-    accessorKey: "adress",
+    accessorKey: "message.adress",
     header: () => <div className="">Address</div>,
     cell: ({ row }) => {
-      const adress = row.original.adress;
-      return <p className="text-sky-600">
-        {adress}
-      </p>
+      const url = row.original.message.adress.link;
+      const address = row.original.message.adress.text;
+      return <a href={url} target="_blank" rel="noopener noreferrer" className="text-yellow-300">
+        {address}
+      </a>
     },
   },
   {
-    accessorKey: "email",
-    header: () => <div className="text-right">Email</div>,
+    id: 'email',
+    accessorKey: "message.email",
+    header: () => <div className="">Email</div>,
     cell: ({ row }) => {
-      const url = row.getValue("email") as string;
-      return <a href={url} target="_blank" rel="noopener noreferrer">
-        <ArrowUpRightFromSquare>Open</ArrowUpRightFromSquare>
-      </a>
+      const email = row.original.message.email;
+      return email ? <a className="text-blue-300" href={`mailto:${email}`}>{email}</a> : "_ _ _ _";
     },
-  }
+  },
 ];

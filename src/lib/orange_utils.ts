@@ -32,13 +32,11 @@ const downloadFile = (blob: Blob, format: "json" | "csv" | "xml") => {
   URL.revokeObjectURL(url);
 };
 
-
-
 export function downloadCardsAsCsv() {
   const cards = getCards();
   if (!cards) return;
   // Define CSV headers
-  const headers = ["Title", "Activity", "Address", "Email", "Phones"];
+  const headers = ["Title", "Activity", "Address", "Map", "Email", "Phones"];
 
   // Convert cards data to CSV format
   const csvContent =
@@ -48,15 +46,16 @@ export function downloadCardsAsCsv() {
       .map((card) =>
         card
           ? [
-            card.title.replace(/(\r\n|\n|\r|,)/gm, " "),
-              card.category.replace(/(\r\n|\n|\r|,)/gm, " "),
-              card.adress.replace(/(\r\n|\n|\r|,)/gm, " "),
-              card.email.replace(/(\r\n|\n|\r|,)/gm, " "),
-              card.phone instanceof Array
-                ? card.phone
+              card.message.title.replace(/(\r\n|\n|\r|,)/gm, " "),
+              card.message.category.replace(/(\r\n|\n|\r|,)/gm, " "),
+              card.message.adress.text.replace(/(\r\n|\n|\r|,)/gm, " "),
+              card.message.adress.link.replace(/(\r\n|\n|\r|,)/gm, " "),
+              card.message.email.replace(/(\r\n|\n|\r|,)/gm, " "),
+              card.message.phone instanceof Array
+                ? card.message.phone
                     .map((phone) => phone.replace(/(\r\n|\n|\r|,)/gm, " "))
                     .join("/")
-                : card.phone.replace(/(\r\n|\n|\r|,)/gm, " "),
+                : card.message.phone.replace(/(\r\n|\n|\r|,)/gm, " "),
             ]
               .map((value) => (value ? `"${value}"` : '""'))
               .join(",")
@@ -89,14 +88,16 @@ export function downloadCardsAsXml() {
     .map(
       (card) => `
   <card>
-      <title>${card.title}</title>
-      <category>${card.category}</category>
-      <address>${card.adress}</address>
-      <email>${card.email}</email>
+      <title>${card.message.title}</title>
+      <category>${card.message.category}</category>
+      <address>
+        <text>${card.message.adress.text}</text>
+      </address>
+      <email>${card.message.email}</email>
       <phones>${
-        card.phone instanceof Array
-          ? card.phone.map(phone => `<tel>${phone}</tel>`).join("\n")
-          : `<tel>${card.phone}</tel>`
+        card.message.phone instanceof Array
+          ? card.message.phone.map((phone) => `<tel>${phone}</tel>`).join("\n")
+          : `<tel>${card.message.phone}</tel>`
       }</phones>
   </card>`
     )
