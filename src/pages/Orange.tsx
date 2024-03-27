@@ -56,7 +56,7 @@ function MyForm() {
                   dispatch(addUniqueObject(event.data))
                   // newCard["selected"] = false;
                   dispatch(addCard(obj));
-                  dispatch(updateProgressCardNumbersForEachPage());
+                  dispatch(updateProgressCardNumbersForEachPage(obj.process));
               } else {
                   toast({
                       variant: "destructive",
