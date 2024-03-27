@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { store } from "@/state/store";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, ArrowUpRightFromSquare } from "lucide-react";
+import { ArrowUpDown, ArrowUpRightFromSquare, ChevronDown } from "lucide-react";
 
 
 export type ProductType = {
@@ -62,24 +64,63 @@ export const columns: ColumnDef<ProductType>[] = [
           </Button>
         )
       },
+    cell: ({ row }) => {
+      const vendor = row.original.data.vendor_info.name ; 
+      const numbers = row.original.data.vendor_info.numbers ;
+      
+      return <div>
+        <p className={Array.isArray(numbers) ? store.getState().autoscout24.dublicateNumbers.includes(numbers[0]) ? "bg-gray-300 dark:bg-muted rounded-full py-1 px-4 text-center":"":""}>{vendor}</p>
+      </div>
+    }
   },
   {
     id:'numbers',
     accessorKey: "data.vendor_info.numbers",
     header: () => <div className="">Numbers</div>,
     cell: ({ row }) => {
-      const numbers = row.original.data.vendor_info.numbers ; 
+      const phones = row.original.data.vendor_info.numbers ; 
+      // return <div>
+      //   {Array.isArray(numbers) ? 
+      //   // make number link tel:number
+      //   <div>
+      //       {numbers.map((number, index) => {
+      //           return <div key={index}><a href={`tel:${number}`}  className="text-sky-800">
+      //           {number} 
+      //           </a>{", "}</div>
+      //       })}
+      //   </div>
+      //    : "---"}
+      // </div>
       return <div>
-        {Array.isArray(numbers) ? 
-        // make number link tel:number
-        <div>
-            {numbers.map((number, index) => {
-                return <div key={index}><a href={`tel:${number}`}  className="text-sky-800">
-                {number} 
-                </a>{", "}</div>
-            })}
-        </div>
-         : "---"}
+        {Array.isArray(phones) ?
+          // make number link tel:number
+          <div className="flex flex-col justify-center items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  <>
+                    <span className="font-semibold text-primary">
+                      {phones.length}</span>&nbsp;Phone Numbers<ChevronDown style={{ scale: "0.7" }} />
+                  </>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                {phones.map((phone, index) => {
+                  return (
+                    <div key={index}>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <a href={`tel:${phone}`} className="font-semibold text-primary">
+                          {phone}
+                        </a>
+                      </DropdownMenuItem>
+                    </div>
+                  )
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          : "---"}
       </div>
     },
   },
