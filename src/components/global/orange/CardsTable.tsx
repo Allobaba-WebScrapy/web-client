@@ -5,7 +5,7 @@ import { RootState } from "@/state/store";
 
 
 
-export default function CarsTable() {
+export default function CardsTable() {
   const data = useSelector((state: RootState) => state.orange.cards);
 
   return (
