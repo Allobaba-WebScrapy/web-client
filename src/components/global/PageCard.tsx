@@ -23,7 +23,7 @@ const PageCard: React.FC<PageCardProps> = ({content,btnValue, imageUrl, url }) =
       >
       </div> */
   // </Link>
-
+    <Link to={url}>
       <div className='cards'>
             <div className="container">
             <div className="parent card2">
@@ -33,13 +33,13 @@ const PageCard: React.FC<PageCardProps> = ({content,btnValue, imageUrl, url }) =
                         <p className="card-content">
                             {content}
                         </p>
-                        <span className="see-more"><Link to={url}>Scrape</Link></span>
+                        {/* <span className="see-more">Scrape</span> */}
                     </div>
                     </div>
                 </div>
             </div>
         </div>
-
+      </Link>
     
   );
 };
