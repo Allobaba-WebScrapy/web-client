@@ -51,7 +51,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
     return (
         <div className="h-full w-full">
             {/* ----------------------------------------------- */}
-            <Card className={cn("w-[600px]", className)} {...props}>
+            <Card className={cn("w-[380px] sm:w-[600px] md:w-[600px] flex-grow", className)} {...props}>
                 <CardHeader>
                     <CardTitle>Progress</CardTitle>
                     <CardDescription>
