@@ -27,7 +27,7 @@ const PagesJaunes = () => {
         console.log(RequestData);
         dispatch(setLoading(true))
         dispatch(clearProgress())
-        fetch("http://localhost:4000/setup", {
+        fetch("http://localhost:4080/setup", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -41,7 +41,7 @@ const PagesJaunes = () => {
         })
             .then(() => {
                 navigate("/scrapy/pagesjaunes/loading")
-                const eventSource = new EventSource("http://localhost:4000/stream");
+                const eventSource = new EventSource("http://localhost:4080/stream");
 
                 //! ------------------- Get the progress from the server -------------------
                 eventSource.addEventListener('progress', function (event) {
@@ -70,12 +70,13 @@ const PagesJaunes = () => {
                 }
                 //! ------------------- Get the done event from the server -------------------
                 eventSource.addEventListener("done", function () {
-                    dispatch(setProgress({ type: "progress", progress: "Scraping is done" }))
+                    dispatch(setProgress({ type: "progress", message: "Scraping is done" }))
                     dispatch(setLoading(false))
                     eventSource.close();
                 });
                 //! ------------------- Get the error from the server -------------------
                 eventSource.addEventListener("errorEvent", function (event) {
+                    console.error(JSON.parse(event.data));
                     dispatch(setProgress(JSON.parse(event.data)));
                     dispatch(setLoading(false))
                     eventSource.close();
@@ -138,7 +139,7 @@ const PagesJaunes = () => {
                 scrape(RequestData)
             }
         } else {
-            dispatch(setError({ type: "url", message: "Invalid URL"}))
+            dispatch(setError({ type: "url", message: "Invalid URL" }))
         }
     }
 
