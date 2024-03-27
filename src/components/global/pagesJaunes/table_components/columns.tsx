@@ -70,7 +70,7 @@ export const columns: ColumnDef<CardType>[] = [
                 <Button variant="outline">
                   <>
                     <span className="font-semibold text-primary">
-                      {phones.length}</span>&nbsp;{phones.length <= 1 ? "Phone Number" : "Phones Numbers"} <ChevronDown style={{ scale: "0.7" }} />
+                      {phones.length}</span>&nbsp;Phone Numbers<ChevronDown style={{ scale: "0.7" }} />
                   </>
                 </Button>
               </DropdownMenuTrigger>
