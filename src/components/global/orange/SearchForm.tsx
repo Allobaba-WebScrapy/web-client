@@ -40,7 +40,7 @@ export function SearchForm({
 
 
     return (
-        <Card className="w-[600px]">
+        <Card className="w-[380px] sm:w-[600px] md:w-[760px] 2xl:w-[600px]">
             <CardHeader>
                 <CardTitle>Let's get some data</CardTitle>
                 <CardDescription>
