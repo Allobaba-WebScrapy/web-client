@@ -11,7 +11,7 @@ import {
 import { Button } from "../ui/button";
 import { ModeToggle } from "../mode-toggle";
 import { useDispatch } from "react-redux";
-import { logout } from "@/state/auth/AuthSlice";
+import { clearCookie, logout } from "@/state/auth/AuthSlice";
 
 const Navbar: React.FC = () => {
   const dispatch = useDispatch()
@@ -47,7 +47,10 @@ const Navbar: React.FC = () => {
             </Link>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="flex justify-center items-center">
-              <Button className="h-10 w-full bg-red-500 hover:bg-red-600 text-secondary dark:text-white " onClick={() => dispatch(logout())}>Logout</Button>
+              <Button className="h-10 w-full bg-red-500 hover:bg-red-600 text-secondary dark:text-white " onClick={() => {
+                dispatch(clearCookie())
+                dispatch(logout())
+              }}>Logout</Button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
