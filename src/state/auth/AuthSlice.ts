@@ -9,7 +9,7 @@ interface AuthState {
 // Initial state
 const initialState: AuthState = {
   isLogin: false,
-  code: import.meta.env.VITE_CODE || "123456",
+  code: import.meta.env.VITE_CODE,
 };
 
 // Create slice
