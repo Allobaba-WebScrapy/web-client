@@ -151,7 +151,7 @@ export const scrapData = createAsyncThunk(
         }),
       };
       const response = await fetch(
-        "https://clownfish-app-uy5m7.ondigitalocean.app/scrape",
+        `${import.meta.env.VITE_APP_AUTOSCOUT24}/scrape`,
         requestOptions
       );
       if (!response.ok || !response.body) {
