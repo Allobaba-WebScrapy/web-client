@@ -27,7 +27,7 @@ const PagesJaunes = () => {
         console.log(RequestData);
         dispatch(setLoading(true))
         dispatch(clearProgress())
-        fetch("http://localhost:4080/setup", {
+        fetch(`${import.meta.env.VITE_APP_PAGESJAUNES}/setup`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -41,7 +41,7 @@ const PagesJaunes = () => {
         })
             .then(() => {
                 navigate("/scrapy/pagesjaunes/loading")
-                const eventSource = new EventSource("http://localhost:4080/stream");
+                const eventSource = new EventSource(`${import.meta.env.VITE_APP_PAGESJAUNES}/stream`);
 
                 //! ------------------- Get the progress from the server -------------------
                 eventSource.addEventListener('progress', function (event) {

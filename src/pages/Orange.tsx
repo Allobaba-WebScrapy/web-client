@@ -23,7 +23,7 @@ function MyForm() {
     dispatch(setLoading(true))
     dispatch(clearProgress())
     // Send the URLs to the server with fetch
-    fetch("http://localhost:4000/setup", {
+    fetch(`${import.meta.env.VITE_APP_ORANGE}/setup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -33,7 +33,7 @@ function MyForm() {
       .then(() => {
         navigate("/scrapy/orange/loading")
         // Start the EventSource connection
-        const eventSource = new EventSource("http://localhost:4000/scrape");
+        const eventSource = new EventSource(`${import.meta.env.VITE_APP_ORANGE}/scrape`);
 
         eventSource.addEventListener("done", function () {
           // Close the connection when the 'done' event is received
