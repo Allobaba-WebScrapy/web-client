@@ -29,7 +29,6 @@ import Orange from "./pages/Orange.tsx";
 import PagesJaunes from "./pages/PagesJaunes.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import LoginPage from "./components/global/LoginPage.tsx";
-import { checkCookie } from "./lib/SecureCredentiels.ts";
 
 const PrivateRoutes = () => {
   return (
