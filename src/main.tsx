@@ -3,18 +3,16 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 
 // redux
-import { Provider } from "react-redux";
-import { store } from "./state/store.ts";
+import { Provider, useSelector } from "react-redux";
+import { RootState, store } from "./state/store.ts";
 
 //react router
 import {
   BrowserRouter as Router,
   Routes,
   Route,
+  Navigate,
 } from "react-router-dom";
-
-// Private routes
-import PrivateRoute from './utils/PrivateRoute.tsx';
 
 // Layouts
 import RootLayout from "./layouts/RootLayout.tsx";
@@ -32,29 +30,55 @@ import PagesJaunes from "./pages/PagesJaunes.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import LoginPage from "./components/global/LoginPage.tsx";
 
+const PrivateRoutes = () => {
+  return (
+    <Routes>
+      <Route path="/scrapy" element={<RootLayout />}>
+        <Route path="*" element={<ScrapyPagesLayout />}>
+          <Route path="" element={<App />} />
+          <Route path="orange/*" element={<Orange />} />
+          <Route path="pagesjaunes/*" element={<PagesJaunes />} />
+          <Route path="autoscout24" element={<AutoScout24 />} />
+        </Route>
+      </Route>
+      <Route path='*' element={<Navigate to='/scrapy' replace />} />
+    </Routes>
+  );
+};
+
+const PublicRoutes = () => {
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path='*' element={<Navigate to='/login' replace />} />
+    </Routes>
+  );
+};
+
+const HandleRoutes = () => {
+  // Call useSelector at the top level of your component
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isLogin);
+
+  return (
+    <Router>
+      <Routes>
+        {
+          isAuthenticated
+            ? <Route path="/*" element={<PrivateRoutes />} />
+            : <Route path="/*" element={<PublicRoutes />} />
+        }
+        <Route path='*' element={<Navigate to='/' replace />} />
+      </Routes>
+    </Router>
+  );
+}
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <Router>
-          <Routes>
-            <Route path="/" element={<LoginPage />} />
-            <Route path="/*" element={<PrivateRoute element={
-              <Routes>
-                <Route path="/" element={<RootLayout />}>
-                  <Route path="scrapy" element={<ScrapyPagesLayout />}>
-                    <Route path="" element={<App />} />
-                    <Route path="orange/*" element={<Orange />} />
-                    <Route path="pagesjaunes/*" element={<PagesJaunes />} />
-                    <Route path="autoscout24" element={<AutoScout24 />} />
-                  </Route>
-                </Route>
-              </Routes>
-            } />} />
-          </Routes>
-        </Router>
+        <HandleRoutes />
       </ThemeProvider>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode >
 );

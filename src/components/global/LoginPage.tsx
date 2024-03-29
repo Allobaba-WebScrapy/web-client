@@ -23,10 +23,11 @@ import { toast } from "@/components/ui/use-toast"
 import { Card } from "../ui/card"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/state/store"
-import { login } from "@/state/auth/AuthSlice"
+import { login, setCookie } from "@/state/auth/AuthSlice"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import { ModeToggle } from "../mode-toggle"
+import { checkCookie } from "@/lib/SecureCredentiels";
 
 const FormSchema = z.object({
   code: z.string().min(6, {
@@ -40,14 +41,15 @@ export default function LoginPage() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+
+
   useEffect(() => {
-    const user = localStorage.getItem("user")
-    if (user) {
-      console.log("User Loged", user)
+    if (checkCookie("user", stateCode)) {
       dispatch(login())
       navigate("/scrapy")
     }
   }, [isLogin])
+
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -65,6 +67,7 @@ export default function LoginPage() {
       })
       return
     } else {
+      dispatch(setCookie())
       dispatch(login())
       navigate("/scrapy")
     }
