@@ -91,7 +91,6 @@ export function SearchForm({
                                 name="startPage"
                                 type="number"
                                 min={1} // minimum value
-                                max={20} // maximum value
                                 placeholder="Start scraping from (1 to 5)"
                                 required
                                 // value={startPage}
