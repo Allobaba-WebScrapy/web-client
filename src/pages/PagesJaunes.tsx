@@ -76,6 +76,7 @@ const PagesJaunes = () => {
                 });
                 //! ------------------- Get the error from the server -------------------
                 eventSource.addEventListener("errorEvent", function (event) {
+                    console.error(event.data);
                     dispatch(setProgress(JSON.parse(event.data)));
                     dispatch(setLoading(false))
                     eventSource.close();
