@@ -78,7 +78,9 @@ const orange = createSlice({
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addCard: (state, action: PayloadAction<CardType>) => {
-      state.cards = [...state.cards, action.payload];
+      if(action.payload.message !== undefined){
+        state.cards = [...state.cards, action.payload];
+      }
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setProgress: (state, action: PayloadAction<any>) => {
