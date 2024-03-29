@@ -106,7 +106,7 @@ const AutoScout24 = () => {
     }
   }, [dispatch, isLoading]);
   return (
-    <div className="flex flex-col w-full items-center">
+    <div className="flex flex-col w-full  items-center">
       <Toaster />
       <div className="flex flex-col gap-2 w-full h-fit justify-center 2xl:flex-row items-center 2xl:items-start">
         <div className="">
