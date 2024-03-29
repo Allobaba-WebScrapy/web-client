@@ -18,7 +18,6 @@ function MyForm() {
   const navigate = useNavigate();
   const { toast } = useToast()
 
-  // eslint-disible-next-line @typescript-eslint/no-explicit-any
   const scrape = async (request:RequestDataState) => {
     dispatch(setLoading(true))
     dispatch(clearProgress())
