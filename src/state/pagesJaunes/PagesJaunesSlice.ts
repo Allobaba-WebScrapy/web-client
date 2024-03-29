@@ -17,10 +17,15 @@ interface RequestDataState {
   businessType: string;
 }
 
+interface Address {
+  link: string;
+  text: string;
+}
+
 interface CardInfo {
   title: string;
   activite: string;
-  address: string;
+  address: Address;
   phones: string[] | string;
 }
 
@@ -53,19 +58,7 @@ const initialState: PagesJaunesState = {
     endPage: 1,
     businessType: "ALL",
   },
-  cards: [
-    // {
-    //   selected: false,
-    //   card_id: "552",
-    //   card_url: "545",
-    //   info: {
-    //     title: "565",
-    //     activite: "35",
-    //     address: "233",
-    //     phones:  ["123", "456"],
-    //   },
-    // },
-  ],
+  cards: [],
   progress: [],
   cardsNumbers: 0,
   loading: false,
@@ -94,21 +87,25 @@ const pagesJaunes = createSlice({
     updateProgressCardNumbersForEachPage: (state) => {
       // Find the last object with "Scraping url" in progress
       for (let i = state.progress.length - 1; i >= 0; i--) {
-        if (state.progress[i].progress.includes("Scraping Page")) {
+        if (state.progress[i].message.includes("Scraping Page")) {
           // Update the cardsNumbers property
-          state.progress[i].cardsNumbers += 1;
+          state.progress[i].limiCard.scrapedCardsNumbers += 1;
+          break;
+        }
+      }
+    },
+    setCompletedScrapePage: (state) => {
+      // Find the last object with "Scraping url" in progress
+      for (let i = state.progress.length - 1; i >= 0; i--) {
+        if (state.progress[i].message.includes("Scraping Page")) {
+          // Update the cardsNumbers property
+          state.progress[i].limiCard.loading = false;
           break;
         }
       }
     },
     clearProgress: (state) => {
       state.progress = [];
-    },
-    setCardNumbers: (state) => {
-      state.cardsNumbers += 1;
-    },
-    clearCardNumbers: (state) => {
-      state.cardsNumbers = 0;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
@@ -149,32 +146,10 @@ const pagesJaunes = createSlice({
       console.log("select update", action.payload.index, action.payload.value);
       state.cards[action.payload.index].selected = action.payload.value;
     },
-    removeSelectedCards: (state) => {
-      state.cards = state.cards.filter((card) => !card.selected);
-    },
-    sortCards: (state, action: PayloadAction<string>) => {
-      switch (action.payload) {
-        case "title":
-          state.cards = state.cards.sort((a, b) =>
-            a.info.title.localeCompare(b.info.title)
-          );
-          break;
-        case "activite":
-          state.cards = state.cards.sort((a, b) =>
-            a.info.activite.localeCompare(b.info.activite)
-          );
-          break;
-        case "address":
-          state.cards = state.cards.sort((a, b) =>
-            a.info.address.localeCompare(b.info.address)
-          );
-          break;
-        case "numbers":
-          state.cards = state.cards.sort((a, b) =>
-            a.info.phones[0].localeCompare(b.info.phones[0])
-          );
-          break;
-      }
+    removeSelectedCards: (state, action: PayloadAction<string[]>) => {
+      state.cards = state.cards.filter(
+        (card) => !action.payload.includes(JSON.stringify(card))
+      );
     },
   },
 });
@@ -188,13 +163,11 @@ export const {
   addOldRequest,
   setProgress,
   clearProgress,
-  setCardNumbers,
-  clearCardNumbers,
   updateProgressCardNumbersForEachPage,
+  setCompletedScrapePage,
   setLoading,
   addUniqueObject,
   findDublicateNumbers,
-  sortCards,
 } = pagesJaunes.actions;
 
 export default pagesJaunes.reducer;

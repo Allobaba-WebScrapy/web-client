@@ -6,6 +6,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { AppDispatch, RootState } from '@/state/store';
 import { SearchForm } from '@/components/global/orange/SearchForm';
 import LoadingPage from '@/components/global/orange/LoadingPage';
+import CardsTable from '@/components/global/orange/CardsTable';
 
 
 function MyForm() {
@@ -17,12 +18,11 @@ function MyForm() {
   const navigate = useNavigate();
   const { toast } = useToast()
 
-  // eslint-disible-next-line @typescript-eslint/no-explicit-any
   const scrape = async (request:RequestDataState) => {
     dispatch(setLoading(true))
     dispatch(clearProgress())
     // Send the URLs to the server with fetch
-    fetch("http://localhost:4000/setup", {
+    fetch(`${import.meta.env.VITE_APP_ORANGE}/setup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -32,7 +32,7 @@ function MyForm() {
       .then(() => {
         navigate("/scrapy/orange/loading")
         // Start the EventSource connection
-        const eventSource = new EventSource("http://localhost:4000/scrape");
+        const eventSource = new EventSource(`${import.meta.env.VITE_APP_ORANGE}/scrape`);
 
         eventSource.addEventListener("done", function () {
           // Close the connection when the 'done' event is received
@@ -56,7 +56,7 @@ function MyForm() {
                   dispatch(addUniqueObject(event.data))
                   // newCard["selected"] = false;
                   dispatch(addCard(obj));
-                  dispatch(updateProgressCardNumbersForEachPage());
+                  dispatch(updateProgressCardNumbersForEachPage(obj.process));
               } else {
                   toast({
                       variant: "destructive",
@@ -133,7 +133,8 @@ function MyForm() {
         <Route path="results" element={
             <React.Fragment>
                 <div className="flex items-center">
-                    {/* <CarsTable /> */}
+                  {/* ... Table Component */}
+                  <CardsTable />
                 </div>
             </React.Fragment>
         } />

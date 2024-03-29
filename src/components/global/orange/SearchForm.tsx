@@ -40,14 +40,18 @@ export function SearchForm({
 
 
     return (
-        <Card className="w-[600px]">
+        <Card className="w-[380px] sm:w-[600px] md:w-[760px] 2xl:w-[600px]">
             <CardHeader>
                 <CardTitle>Let's get some data</CardTitle>
                 <CardDescription>
                     1- Select the Activites you want to scrape.
-                    2- Choose the starting page number.
+                    <br />
+                    2- Choose the starting page number. <span className='text-yellow-400'>"Starting page number cannot exceed a number larger than the total pages"</span>
+                    <br />
                     3- Select the number of pages to scrape (between 1 and 5).
+                    <br />
                     4- Choose the type of data (B2B, B2C, or All).
+                    <br />
                     5- start scraping.
                     <br />
                 </CardDescription>
@@ -87,8 +91,8 @@ export function SearchForm({
                                 name="startPage"
                                 type="number"
                                 min={1} // minimum value
-                                max={10} // maximum value
-                                placeholder="Start scraping from (1 to 10)"
+                                max={20} // maximum value
+                                placeholder="Start scraping from (1 to 5)"
                                 required
                                 // value={startPage}
                                 // onChange={e => setstartPage(e.target.value)}
@@ -101,8 +105,8 @@ export function SearchForm({
                                 id="endPage"
                                 name="endPage"
                                 min={1} // minimum value
-                                max={10} // maximum value
-                                placeholder="Limit scraping from (1 to 10)"
+                                max={5} // maximum value
+                                placeholder="Limit scraping from (1 to 5)"
                                 // value={limitPage}
                                 // onChange={e=>setlimitPage(e.target.value)}
                                 required

@@ -1,5 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+// export interface RequestUrlState {
+//   url: string;
+//   params: {
+//     page: number;
+//     tri: string;
+//   };
+//   limit: number;
+//   businessType: string;
+// }
+
 export interface RequestDataState {
   activites_name: string;
   type: string;
@@ -7,13 +17,23 @@ export interface RequestDataState {
   limit_pages: number;
 }
 
-export interface CardType {
+interface Address {
+  text: string;
+  link: string;
+}
+
+export interface CardData {
   selected: boolean;
   title: string;
   category: string;
-  adress: string;
+  adress: Address;
   phone: string[] | string;
   email: string;
+}
+
+export interface CardType {
+  message: CardData;
+  response: any;
 }
 
 // Interface
@@ -34,7 +54,7 @@ interface OrangeState {
 const initialState: OrangeState = {
   requestData: {
     activites_name: "",
-    type: "",
+    type: "All",
     start_pages: 1,
     limit_pages: 1,
   },
@@ -58,20 +78,21 @@ const orange = createSlice({
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addCard: (state, action: PayloadAction<CardType>) => {
-      console.log("Received: ", action.payload);
       state.cards = [...state.cards, action.payload];
-      console.log(state.cards);
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setProgress: (state, action: PayloadAction<any>) => {
       state.progress.push(action.payload);
     },
-    updateProgressCardNumbersForEachPage: (state) => {
+    updateProgressCardNumbersForEachPage: (
+      state,
+      action: PayloadAction<any>
+    ) => {
       // Find the last object with "Scraping url" in progress
       for (let i = state.progress.length - 1; i >= 0; i--) {
-        if (state.progress[i].message.includes("Scrape Card")) {
+        if (state.progress[i].message.includes("Get Non Deplicate Card")) {
           // Update the cardsNumbers property
-          state.cardsNumbers = state.progress[i].procsess;
+          state.progress[i].card_progress = action.payload;
           break;
         }
       }
@@ -80,7 +101,7 @@ const orange = createSlice({
       state.progress = [];
     },
     setCardNumbers: (state) => {
-      state.cardsNumbers = state.progress[-1].procsess;
+      state.cardsNumbers += 1;
     },
     clearCardNumbers: (state) => {
       state.cardsNumbers = 0;
@@ -104,8 +125,8 @@ const orange = createSlice({
       const allNumbers: string[] = [];
 
       for (const card of state.cards) {
-        if (typeof card.phone == typeof []) {
-          for (const number of card.phone) {
+        if (typeof card.message.phone == typeof []) {
+          for (const number of card.message.phone) {
             if (allNumbers.includes(number)) {
               if (!state.dublicateNumbers.includes(number)) {
                 state.dublicateNumbers.push(number);
@@ -122,39 +143,12 @@ const orange = createSlice({
       action: PayloadAction<{ index: number; value: boolean }>
     ) => {
       console.log("select update", action.payload.index, action.payload.value);
-      state.cards[action.payload.index].selected = action.payload.value;
+      state.cards[action.payload.index].message.selected = action.payload.value;
     },
-    removeSelectedCards: (state) => {
-      state.cards = state.cards.filter((card) => !card.selected);
-    },
-    sortCards: (state, action: PayloadAction<string>) => {
-      switch (action.payload) {
-        case "title":
-          state.cards = state.cards.sort((a, b) =>
-            a.title.localeCompare(b.title)
-          );
-          break;
-        case "activite":
-          state.cards = state.cards.sort((a, b) =>
-            a.category.localeCompare(b.category)
-          );
-          break;
-        case "address":
-          state.cards = state.cards.sort((a, b) =>
-            a.adress.localeCompare(b.adress)
-          );
-          break;
-        case "numbers":
-          state.cards = state.cards.sort((a, b) =>
-            a.phone[0].localeCompare(b.phone[0])
-          );
-          break;
-        case "email":
-          state.cards = state.cards.sort((a, b) =>
-            a.email.localeCompare(b.email)
-          );
-          break;
-      }
+    removeSelectedCards: (state, action: PayloadAction<string[]>) => {
+      state.cards = state.cards.filter(
+        (card) => !action.payload.includes(JSON.stringify(card))
+      );
     },
   },
 });
@@ -174,7 +168,6 @@ export const {
   setLoading,
   addUniqueObject,
   findDublicateNumbers,
-  sortCards,
 } = orange.actions;
 
 export default orange.reducer;

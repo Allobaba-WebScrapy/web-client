@@ -18,12 +18,12 @@ import {
     downloadCardsAsCsv,
     downloadCardsAsJson,
     downloadCardsAsXml,
-} from "@/lib/pagesjaunes_utils";
+} from "@/lib/orange_utils";
 
 type Step = {
     type: string;
-    message?: string;
-    proccess?: any;
+    message: string;
+    card_progress?: any;
 };
 type CardProps = React.ComponentProps<typeof Card>;
 type ScrapeFunction = (requestData: any) => Promise<void>;
@@ -51,7 +51,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
     return (
         <div className="h-full w-full">
             {/* ----------------------------------------------- */}
-            <Card className={cn("w-[600px]", className)} {...props}>
+            <Card className={cn("w-[380px] sm:w-[600px] md:w-[600px] flex-grow", className)} {...props}>
                 <CardHeader>
                     <CardTitle>Progress</CardTitle>
                     <CardDescription>
@@ -66,14 +66,18 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
                                 key={index}
                                 className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0"
                             >
-                                <span className={`flex h-2 w-2 translate-y-1 rounded-full ${step.type === "progress" ? "bg-green-500" : "bg-red-500"}`} />
+                                {step.card_progress !== undefined ?
+                                    <span className={`flex h-2 w-2 translate-y-1 rounded-full ${step.card_progress.nCard < step.card_progress.length || step.card_progress.length == 0 ? "bg-yellow-500" : "bg-green-500"}`} />
+                                    :
+                                    <span className={`flex h-2 w-2 translate-y-1 rounded-full ${step.type === "progress" ? "bg-green-500" : "bg-red-500"}`} />
+                                }
                                 <div className="space-y-1">
                                     <p className="text-sm font-medium leading-none">
                                         {step.message}
                                     </p>
-                                    {step.proccess !== undefined && (
-                                        <p className="font-normal text-black">
-                                            {step.proccess.nCard}/{step.proccess.length}
+                                    {step.card_progress !== undefined && (
+                                        <p className="font-normal">
+                                            Scrape Card : {step.card_progress.nCard}/{step.card_progress.length}
                                         </p>
                                     )}
                                     <p className={`text-sm text-muted-foreground ${step.type === "progress" ? "text-green-500" : "text-red-500"}`}>{step.type}</p>
