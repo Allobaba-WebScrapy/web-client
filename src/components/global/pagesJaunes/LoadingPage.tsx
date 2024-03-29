@@ -26,6 +26,7 @@ type Step = {
     limiCard?: {
         scrapedCardsNumbers: number,
         avalaibleCardsNumbers: number,
+        loading: boolean   
     };
 };
 type CardProps = React.ComponentProps<typeof Card>;
@@ -52,9 +53,9 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
     });
 
     return (
-        <div className="h-full w-full">
+        <div className="h-full w-[380px] sm:w-[600px] md:w-[760px] 2xl:w-[600px]">
             {/* ----------------------------------------------- */}
-            <Card className={cn("w-[600px]", className)} {...props}>
+            <Card className={cn("w-full", className)} {...props}>
                 <CardHeader>
                     <CardTitle>Progress</CardTitle>
                     <CardDescription>
@@ -70,7 +71,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
                                 className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0"
                             >
                                 {step.limiCard !== undefined ?
-                                    <span className={`flex h-2 w-2 translate-y-1 rounded-full ${step.limiCard.scrapedCardsNumbers < step.limiCard.avalaibleCardsNumbers ? "bg-yellow-500" : "bg-green-500"}`} /> :
+                                    <span className={`flex h-2 w-2 translate-y-1 rounded-full ${step.limiCard.scrapedCardsNumbers < step.limiCard.avalaibleCardsNumbers && step.limiCard.loading ? "bg-yellow-500" : "bg-green-500"}`} /> :
                                     <span className={`flex h-2 w-2 translate-y-1 rounded-full ${step.type === "progress" ? "bg-green-500" : "bg-red-500"}`} />
                                 }
                                 <div className="space-y-1">
@@ -109,21 +110,21 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
                             <div className="flex justify-around items-center">
                                 <Button
                                     onClick={() => downloadCardsAsCsv()}
-                                    className="h-20 w-[28%] text-base flex gap-2 justify-center items-center"
+                                    className="h-16 w-[30%] text-xs sm:text-base flex gap-2 justify-center items-center"
                                 >
                                     {/* <Download /> */}
                                     Download CSV
                                 </Button>
                                 <Button
                                     onClick={() => downloadCardsAsJson()}
-                                    className="h-20 w-[28%] text-base flex gap-2 justify-center items-center"
+                                    className="h-16 w-[30%] text-xs sm:text-base flex gap-2 justify-center items-center"
                                 >
                                     {/* <Download /> */}
                                     Download JSON
                                 </Button>
                                 <Button
                                     onClick={() => downloadCardsAsXml()}
-                                    className="h-20 w-[28%] text-base flex gap-2 justify-center items-center"
+                                    className="h-16 w-[30%] text-xs sm:text-base flex gap-2 justify-center items-center"
                                 >
                                     {/* <Download /> */}
                                     Download XML

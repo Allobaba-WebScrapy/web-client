@@ -94,6 +94,16 @@ const pagesJaunes = createSlice({
         }
       }
     },
+    setCompletedScrapePage: (state) => {
+      // Find the last object with "Scraping url" in progress
+      for (let i = state.progress.length - 1; i >= 0; i--) {
+        if (state.progress[i].message.includes("Scraping Page")) {
+          // Update the cardsNumbers property
+          state.progress[i].limiCard.loading = false;
+          break;
+        }
+      }
+    },
     clearProgress: (state) => {
       state.progress = [];
     },
@@ -154,6 +164,7 @@ export const {
   setProgress,
   clearProgress,
   updateProgressCardNumbersForEachPage,
+  setCompletedScrapePage,
   setLoading,
   addUniqueObject,
   findDublicateNumbers,

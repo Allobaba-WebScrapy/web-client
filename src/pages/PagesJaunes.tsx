@@ -2,7 +2,7 @@ import CarsTable from "@/components/global/pagesJaunes/CardsTable";
 import { SearchForm } from "@/components/global/pagesJaunes/SearchForm";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
-import { addCard, addOldRequest, addUniqueObject, findDublicateNumbers, setError, setProgress, clearProgress, setLoading, setRequestData, updateProgressCardNumbersForEachPage } from "@/state/pagesJaunes/PagesJaunesSlice";
+import { addCard, addOldRequest, addUniqueObject, findDublicateNumbers, setError, setProgress, clearProgress, setLoading, setRequestData, updateProgressCardNumbersForEachPage, setCompletedScrapePage } from "@/state/pagesJaunes/PagesJaunesSlice";
 import { AppDispatch, RootState } from "@/state/store";
 import { useSelector, useDispatch } from "react-redux";
 import React, { useEffect } from "react";
@@ -23,7 +23,6 @@ const PagesJaunes = () => {
     // Scrape the data from the server
     const scrape = async (RequestData: any) => {
         if (!isValidUrl(RequestData.url) || !true) return
-        console.log("Scraping...")
         console.log(RequestData);
         dispatch(setLoading(true))
         dispatch(clearProgress())
@@ -45,7 +44,9 @@ const PagesJaunes = () => {
 
                 //! ------------------- Get the progress from the server -------------------
                 eventSource.addEventListener('progress', function (event) {
-                    console.log(JSON.parse(event.data));
+                    if(JSON.parse(event.data).message.includes("Scraping Page completed")){
+                        dispatch(setCompletedScrapePage())
+                    }
                     dispatch(setProgress(JSON.parse(event.data)));
                 });
                 //! --------------------- Get the data from the server --------------------
@@ -53,7 +54,6 @@ const PagesJaunes = () => {
                     const obj = JSON.parse(event.data);
                     if (obj.card_url !== undefined) {
                         if (!uniqueObjects.includes(event.data)) {
-                            console.log(obj);
                             dispatch(addUniqueObject(event.data))
                             obj["selected"] = false;
                             dispatch(addCard(obj));
@@ -76,7 +76,6 @@ const PagesJaunes = () => {
                 });
                 //! ------------------- Get the error from the server -------------------
                 eventSource.addEventListener("errorEvent", function (event) {
-                    console.error(JSON.parse(event.data));
                     dispatch(setProgress(JSON.parse(event.data)));
                     dispatch(setLoading(false))
                     eventSource.close();
@@ -87,9 +86,13 @@ const PagesJaunes = () => {
                     eventSource.close();
                 };
             })
-            .catch((error) => {
-                console.error({ type: "error", progress: error.message });
+            .catch(() => {
                 dispatch(setProgress({ type: "error", progress: "Fetch Connection Error" }));
+                toast({
+                    variant: "destructive",
+                    title: "Fetch Connection Error.",
+                    description: "Verifier votre connexion!",
+                });
                 dispatch(setLoading(false))
             });
     };
@@ -156,7 +159,7 @@ const PagesJaunes = () => {
         <div className="flex flex-col w-full items-center justify-center">
             <Toaster />
             <Routes>
-                <Route path="/*" element={
+                // <Route path="/*" element={
                     <React.Fragment>
                         <div>
                             <SearchForm handleSubmit={handleSubmit} />
