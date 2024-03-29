@@ -91,7 +91,7 @@ export function SearchForm({
                                 name="startPage"
                                 type="number"
                                 min={1} // minimum value
-                                placeholder="Start scraping from (1 to 5)"
+                                placeholder="Start scraping"
                                 required
                                 // value={startPage}
                                 // onChange={e => setstartPage(e.target.value)}
