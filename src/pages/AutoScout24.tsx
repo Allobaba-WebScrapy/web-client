@@ -122,9 +122,7 @@ const AutoScout24 = () => {
           </div>
         </div>
       </div>
-      <div className="mt-8 w-[100vw] overflow-x-scroll">
-        <ProductsTable />
-      </div>
+      <ProductsTable />
     </div>
   );
 };
