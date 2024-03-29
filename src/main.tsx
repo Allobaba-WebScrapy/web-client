@@ -29,6 +29,7 @@ import Orange from "./pages/Orange.tsx";
 import PagesJaunes from "./pages/PagesJaunes.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import LoginPage from "./components/global/LoginPage.tsx";
+import { checkCookie } from "./lib/SecureCredentiels.ts";
 
 const PrivateRoutes = () => {
   return (
@@ -76,7 +77,7 @@ const HandleRoutes = () => {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <HandleRoutes />
       </ThemeProvider>
     </Provider>
