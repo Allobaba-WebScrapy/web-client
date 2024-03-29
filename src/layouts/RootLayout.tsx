@@ -15,11 +15,12 @@ const RootLayout: React.FC = () => {
     if (!checkCookie("user", stateCode)) {
       dispatch(logout())
       navigate("/login")
+    }else{
+      navigate("/scrapy")
     }
   }, [isLogin])
-
   return (
-    <div className="min-h-[100vh]  overflow-hidden">
+    <div className="min-h-[100vh] overflow-hidden">
       <Outlet />
     </div>
   );
