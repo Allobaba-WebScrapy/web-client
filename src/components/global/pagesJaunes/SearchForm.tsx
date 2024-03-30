@@ -117,6 +117,9 @@ export function SearchForm({
                                     <SelectItem value="PERTINENCE-ASC">
                                         PERTINENCE
                                     </SelectItem>
+                                    <SelectItem value="DISTANCE-ASC">
+                                        DISTANCE
+                                    </SelectItem>
                                     <SelectItem value="NOTE_GLOBALE-DESC" >NOTE</SelectItem>
                                     <SelectItem value="NOMBRE_GLOBAL_AVIS-DESC">NOMBRE D'AVIS</SelectItem>
                                 </SelectContent>

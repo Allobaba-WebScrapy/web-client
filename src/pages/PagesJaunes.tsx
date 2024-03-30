@@ -44,7 +44,7 @@ const PagesJaunes = () => {
 
                 //! ------------------- Get the progress from the server -------------------
                 eventSource.addEventListener('progress', function (event) {
-                    if(JSON.parse(event.data).message.includes("Scraping Page completed")){
+                    if(JSON.parse(event.data).message.includes("Scraping Page completed ✌")){
                         dispatch(setCompletedScrapePage())
                     }
                     dispatch(setProgress(JSON.parse(event.data)));
@@ -70,7 +70,7 @@ const PagesJaunes = () => {
                 }
                 //! ------------------- Get the done event from the server -------------------
                 eventSource.addEventListener("done", function () {
-                    dispatch(setProgress({ type: "progress", message: "Scraping is done" }))
+                    dispatch(setProgress({ type: "progress", message: "Scraping is done 🥳" }))
                     dispatch(setLoading(false))
                     eventSource.close();
                 });
