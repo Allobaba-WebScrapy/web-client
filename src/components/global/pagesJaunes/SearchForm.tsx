@@ -86,7 +86,6 @@ export function SearchForm({
                                 name="startPage"
                                 type="number"
                                 min={1} // minimum value
-                                max={10} // maximum value
                                 placeholder="Start scraping from (1 to 10)"
                                 required
                                 value={startPage}
@@ -100,7 +99,7 @@ export function SearchForm({
                                 id="endPage"
                                 name="endPage"
                                 min={1} // minimum value
-                                max={10} // maximum value
+                                max={5} // maximum value
                                 defaultValue={"1"}
                                 placeholder="Limit scraping from (1 to 10)"
                                 required
@@ -117,6 +116,9 @@ export function SearchForm({
                                 <SelectContent position="popper">
                                     <SelectItem value="PERTINENCE-ASC">
                                         PERTINENCE
+                                    </SelectItem>
+                                    <SelectItem value="DISTANCE-ASC">
+                                        DISTANCE
                                     </SelectItem>
                                     <SelectItem value="NOTE_GLOBALE-DESC" >NOTE</SelectItem>
                                     <SelectItem value="NOMBRE_GLOBAL_AVIS-DESC">NOMBRE D'AVIS</SelectItem>

@@ -41,7 +41,6 @@ interface DataTableProps {
 }
 
 export const DataTable: React.FC<DataTableProps> = ({ columns, data }) => {
-  console.log(data)
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
