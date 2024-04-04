@@ -11,14 +11,15 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, LucideArrowLeft, LucideArrowRight } from "lucide-react";
-import { RootState } from "@/state/store";
-import { useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/state/store";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
     downloadCardsAsCsv,
     downloadCardsAsJson,
     downloadCardsAsXml,
 } from "@/lib/pagesjaunes_utils";
+import { scrapData } from "@/state/pagesJaunes/PagesJaunesSlice";
 
 type Step = {
     type: string;
@@ -26,16 +27,13 @@ type Step = {
     limiCard?: {
         scrapedCardsNumbers: number,
         avalaibleCardsNumbers: number,
-        loading: boolean   
+        loading: boolean
     };
 };
 type CardProps = React.ComponentProps<typeof Card>;
-type ScrapeFunction = (requestData: any) => Promise<void>;
-type LoadingPageProps = CardProps & {
-    scrape: ScrapeFunction;
-};
+type LoadingPageProps = CardProps;
 
-const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }) => {
+const LoadingPage: React.FC<LoadingPageProps> = ({ className, ...props }) => {
     const requestData = useSelector((state: RootState) => state.pagesJaunes.requestData);
     const cards = useSelector((state: RootState) => state.pagesJaunes.cards);
     const progress = useSelector(
@@ -44,6 +42,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
     const isLoading = useSelector(
         (state: RootState) => state.pagesJaunes.loading
     );
+    const dispatch: AppDispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -72,7 +71,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
                             >
                                 {step.limiCard !== undefined ?
                                     <span className={`flex h-2 w-2 translate-y-1 rounded-full ${step.limiCard.scrapedCardsNumbers < step.limiCard.avalaibleCardsNumbers && step.limiCard.loading ? "bg-yellow-500" : "bg-green-500"}`} /> :
-                                    <span className={`flex h-2 w-2 translate-y-1 rounded-full ${step.type === "progress" ? "bg-green-500" : "bg-red-500"}`} />
+                                    <span className={`flex h-2 w-2 translate-y-1 rounded-full ${(step.type.includes("progress") || step.type.includes("done")) ? "bg-green-500" : "bg-red-500"}`} />
                                 }
                                 <div className="space-y-1">
                                     <p className="text-sm font-medium leading-none">
@@ -83,7 +82,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
                                             {step.limiCard.scrapedCardsNumbers} cards scraped / {step.limiCard.avalaibleCardsNumbers} cards available
                                         </p>
                                     )}
-                                    <p className={`text-sm text-muted-foreground ${step.type === "progress" ? "text-green-500" : "text-red-500"}`}>{step.type}</p>
+                                    <p className={`text-sm text-muted-foreground ${(step.type.includes("progress") || step.type.includes("done")) ? "text-green-500" : "text-red-500"}`}>{step.type}</p>
                                 </div>
                             </div>
                         ))}
@@ -133,7 +132,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
                         </div>
                     ) :
                         <Button
-                            onClick={() => scrape(requestData)}
+                            onClick={() => dispatch(scrapData())}
                             className="h-20 w-full flex gap-5 justify-center items-center bg-red-500 text-white text-xl hover:bg-zinc-600"
                         >
                             <LucideArrowLeft className="outline rounded-full outline-2 outline-offset-2 outline-white w-4 h-4" />

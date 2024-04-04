@@ -97,12 +97,12 @@ export default function LoginPage() {
                   <FormControl>
                     <InputOTP maxLength={6} {...field}>
                       <InputOTPGroup className="w-full flex justify-center items-center">
-                        <InputOTPSlot className="border-neutral-600 text-base font-semibold" index={0} />
-                        <InputOTPSlot className="border-neutral-600 text-base font-semibold" index={1} />
-                        <InputOTPSlot className="border-neutral-600 text-base font-semibold" index={2} />
-                        <InputOTPSlot className="border-neutral-600 text-base font-semibold" index={3} />
-                        <InputOTPSlot className="border-neutral-600 text-base font-semibold" index={4} />
-                        <InputOTPSlot className="border-neutral-600 text-base font-semibold" index={5} />
+                        <InputOTPSlot className="hidden-password border-neutral-600 text-base font-semibold" index={0} />
+                        <InputOTPSlot className="hidden-password border-neutral-600 text-base font-semibold" index={1} />
+                        <InputOTPSlot className="hidden-password border-neutral-600 text-base font-semibold" index={2} />
+                        <InputOTPSlot className="hidden-password border-neutral-600 text-base font-semibold" index={3} />
+                        <InputOTPSlot className="hidden-password border-neutral-600 text-base font-semibold" index={4} />
+                        <InputOTPSlot className="hidden-password border-neutral-600 text-base font-semibold" index={5} />
                       </InputOTPGroup>
                     </InputOTP>
                   </FormControl>

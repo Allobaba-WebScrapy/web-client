@@ -159,3 +159,10 @@
 .content-box .see-more:hover {
     transform: translate3d(0px, 0px, 50px);
 } */
+
+
+/* --------------------------Hidden Password Code------------------------------ */
+.hidden-password {
+  font-family: text-security-disc;
+  -webkit-text-security: disc;
+}

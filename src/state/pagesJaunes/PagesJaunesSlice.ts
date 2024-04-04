@@ -1,14 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-// export interface RequestUrlState {
-//   url: string;
-//   params: {
-//     page: number;
-//     tri: string;
-//   };
-//   limit: number;
-//   businessType: string;
-// }
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { store } from "../store";
+import { toast } from "@/components/ui/use-toast";
 
 interface RequestDataState {
   url: string;
@@ -122,23 +114,6 @@ const pagesJaunes = createSlice({
     addOldRequest: (state) => {
       state.oldRequests.push(JSON.stringify(state.requestData));
     },
-    findDublicateNumbers: (state) => {
-      const allNumbers: string[] = [];
-
-      for (const card of state.cards) {
-        if (typeof card.info.phones == typeof []) {
-          for (const number of card.info.phones) {
-            if (allNumbers.includes(number)) {
-              if (!state.dublicateNumbers.includes(number)) {
-                state.dublicateNumbers.push(number);
-              }
-            } else {
-              allNumbers.push(number);
-            }
-          }
-        }
-      }
-    },
     updateCardSelectedState: (
       state,
       action: PayloadAction<{ index: number; value: boolean }>
@@ -154,6 +129,96 @@ const pagesJaunes = createSlice({
   },
 });
 
+// ------------------------------------- Scrape Function ----------------------------------------
+export const scrapData = createAsyncThunk("users/scrapData", async () => {
+  try {
+    store.dispatch(setLoading(true));
+    store.dispatch(clearProgress());
+    store.dispatch(
+      setProgress({
+        type: "progress",
+        message: "Sending request to the server...",
+      })
+    );
+    const requestData = store.getState().pagesJaunes.requestData;
+    console.log(requestData);
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url: requestData.url,
+        startPage: requestData.startPage,
+        endPage: requestData.endPage,
+        businessType: requestData.businessType,
+      }),
+    };
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_PAGESJAUNES}/stream`,
+      requestOptions
+    );
+    if (!response.ok || !response.body) {
+      throw response.statusText;
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        store.dispatch(setLoading(false));
+        break;
+      }
+
+      const decodedChunk = decoder.decode(value, { stream: true });
+      // Split the chunk into separate data events
+      const dataEvents = decodedChunk.split("\n\n");
+      for (const dataEvent of dataEvents) {
+        // Extract the JSON part from the SSE message
+        const jsonPart = dataEvent.replace("data: ", "").trim();
+
+        // Skip empty strings
+        if (!jsonPart) {
+          continue;
+        }
+
+        const obj = JSON.parse(jsonPart);
+
+        console.log("--- Yielded Response:", obj);
+        console.log(store.getState().pagesJaunes.progress);
+        if (obj.type === "response" && obj.message.card_url !== undefined) {
+          if (
+            !store.getState().pagesJaunes.uniqueObjects.includes(decodedChunk)
+          ) {
+            store.dispatch(addUniqueObject(decodedChunk));
+            store.dispatch(addCard(obj.message));
+            store.dispatch(updateProgressCardNumbersForEachPage());
+          } else {
+            toast({
+              variant: "destructive",
+              title: "Product is already in the table.",
+              description: "The duplicate version doesn't added to table!",
+            });
+            console.log("duplicated");
+          }
+        } else if (obj.type === "progress") {
+          store.dispatch(setProgress(obj));
+        } else if (obj.type === "error") {
+          store.dispatch(setProgress(obj));
+        } else if (obj.type === "done") {
+          store.dispatch(setProgress(obj));
+          store.dispatch(setLoading(false));
+        }
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    store.dispatch(setProgress({ type: "error", message: "Fetch Error" }));
+    store.dispatch(setLoading(false));
+  }
+});
+
 export const {
   setRequestData,
   removeSelectedCards,
@@ -167,7 +232,6 @@ export const {
   setCompletedScrapePage,
   setLoading,
   addUniqueObject,
-  findDublicateNumbers,
 } = pagesJaunes.actions;
 
 export default pagesJaunes.reducer;
