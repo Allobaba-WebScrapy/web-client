@@ -9,7 +9,7 @@ export default function CarsTable() {
   const data = useSelector((state: RootState) => state.pagesJaunes.cards);
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto ">
       <DataTable columns={columns} data={data} />
     </div>
   )
