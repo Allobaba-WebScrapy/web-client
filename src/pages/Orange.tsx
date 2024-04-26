@@ -7,6 +7,7 @@ import { AppDispatch, RootState } from '@/state/store';
 import { SearchForm } from '@/components/global/orange/SearchForm';
 import LoadingPage from '@/components/global/orange/LoadingPage';
 import CardsTable from '@/components/global/orange/CardsTable';
+import RedirectButton from '@/components/global/RedirectButton';
 
 
 function MyForm() {
@@ -133,8 +134,10 @@ function MyForm() {
         <Route path="results" element={
             <React.Fragment>
                 <div className="flex items-center">
-                  {/* ... Table Component */}
+                <div className="flex flex-col">
+                  <RedirectButton path="/scrapy/orange/loading" />
                   <CardsTable />
+                </div>
                 </div>
             </React.Fragment>
         } />
