@@ -24,7 +24,7 @@ import { Card } from "../ui/card"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/state/store"
 import { login, setCookie } from "@/state/auth/AuthSlice"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { useEffect } from "react"
 import { ModeToggle } from "../mode-toggle"
 import { checkCookie } from "@/lib/SecureCredentiels";
@@ -40,15 +40,22 @@ export default function LoginPage() {
   const isLogin = useSelector((state: RootState) => state.auth.isLogin)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const location = useLocation()
 
-
-
+  // On load: if cookie is valid, log in and redirect
   useEffect(() => {
     if (checkCookie("user", stateCode)) {
       dispatch(login())
-      navigate("/scrapy")
+      navigate("/scrapy", { replace: true })
     }
-  }, [isLogin, dispatch, navigate, stateCode])
+  }, [stateCode, dispatch, navigate])
+
+  // After login (e.g. form submit): redirect once auth state has updated
+  useEffect(() => {
+    if (isLogin && location.pathname === "/login") {
+      navigate("/scrapy", { replace: true })
+    }
+  }, [isLogin, location.pathname, navigate])
 
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -69,7 +76,8 @@ export default function LoginPage() {
     } else {
       dispatch(setCookie())
       dispatch(login())
-      navigate("/scrapy")
+      // Don't navigate here — auth state updates asynchronously. The useEffect above
+      // will redirect to /scrapy once isLogin is true.
     }
   }
 

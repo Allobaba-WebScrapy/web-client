@@ -14,11 +14,10 @@ const RootLayout: React.FC = () => {
   useEffect(() => {
     if (!checkCookie("user", stateCode)) {
       dispatch(logout())
-      navigate("/login")
-    }else{
-      navigate("/scrapy")
+      navigate("/login", { replace: true })
     }
-  }, [isLogin, dispatch, navigate, stateCode])
+    // When cookie is valid, stay on current path — do not force /scrapy
+  }, [stateCode, dispatch, navigate])
   return (
     <div className="min-h-[100vh] overflow-hidden">
       <Outlet />
