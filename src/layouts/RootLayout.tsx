@@ -7,7 +7,6 @@ import { Outlet, useNavigate } from "react-router-dom";
 
 const RootLayout: React.FC = () => {
   const stateCode = useSelector((state: RootState) => state.auth.code)
-  const isLogin = useSelector((state: RootState) => state.auth.isLogin)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
