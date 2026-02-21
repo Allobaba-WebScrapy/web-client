@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- route components in entry file */
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";

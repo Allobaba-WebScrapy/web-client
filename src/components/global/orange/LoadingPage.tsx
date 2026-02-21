@@ -19,14 +19,11 @@ import {
     downloadCardsAsJson,
     downloadCardsAsXml,
 } from "@/lib/orange_utils";
+import type { ProgressStep, RequestDataState } from "@/state/orange/OrangeSlice";
 
-type Step = {
-    type: string;
-    message: string;
-    card_progress?: any;
-};
+type Step = ProgressStep;
 type CardProps = React.ComponentProps<typeof Card>;
-type ScrapeFunction = (requestData: any) => Promise<void>;
+type ScrapeFunction = (requestData: RequestDataState) => Promise<void>;
 type LoadingPageProps = CardProps & {
     scrape: ScrapeFunction;
 };
@@ -73,7 +70,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ className, scrape, ...props }
                                 }
                                 <div className="space-y-1">
                                     <p className="text-sm font-medium leading-none">
-                                        {step.message}
+                                        {step.message ?? step.progress ?? ""}
                                     </p>
                                     {step.card_progress !== undefined && (
                                         <p className="font-normal">

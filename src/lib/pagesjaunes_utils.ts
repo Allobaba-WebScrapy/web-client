@@ -11,12 +11,16 @@ export function makePerfectUrl(base_url: string): string {
   if (parsed_url.pathname === "/annuaire/chercherlespros") {
     const query_params = new URLSearchParams(parsed_url.search);
     const preserved_params: { [key: string]: string[] } = {};
-    for (let key of query_params.keys()) {
+    for (const key of query_params.keys()) {
       if (["quoiqui", "ou", "tri", "page"].includes(key)) {
         preserved_params[key] = query_params.getAll(key);
       }
     }
-    parsed_url.search = new URLSearchParams(preserved_params as any).toString();
+    parsed_url.search = new URLSearchParams(
+      Object.entries(preserved_params).flatMap(([k, arr]) =>
+        arr.map((v) => [k, v] as [string, string])
+      )
+    ).toString();
     perfect_url = parsed_url.toString();
   } else {
     const path_parts = parsed_url.pathname.split("/");
@@ -29,7 +33,11 @@ export function makePerfectUrl(base_url: string): string {
       ou: city ? [city] : ["paris-75"],
     };
     parsed_url.pathname = "/annuaire/chercherlespros";
-    parsed_url.search = new URLSearchParams(query_params as any).toString();
+    parsed_url.search = new URLSearchParams(
+      Object.entries(query_params).flatMap(([k, arr]) =>
+        arr.map((v) => [k, v] as [string, string])
+      )
+    ).toString();
     perfect_url = parsed_url.toString();
   }
 
@@ -48,7 +56,7 @@ export function addArgumentsToUrl(
 ): string {
   const parsed_url = new URL(base_url);
   const query_params = new URLSearchParams(parsed_url.search);
-  for (let key in params) {
+  for (const key in params) {
     query_params.set(key, params[key]);
   }
   parsed_url.search = query_params.toString();
@@ -90,7 +98,7 @@ export function processUrl(baseUrl: {
     businessType: "ALL",
   };
   try {
-    let perfectUrl = makePerfectUrl(url);
+    const perfectUrl = makePerfectUrl(url);
     if (!params && perfectUrl.includes("?")) {
       updatedUrl = {
         url: perfectUrl,

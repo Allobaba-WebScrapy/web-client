@@ -45,7 +45,6 @@ interface infoState {
 interface AutoScout24State {
   requestData: RequestDataState;
   cars: ProductType[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   info: infoState;
   loading: boolean;
   error: string | null;
@@ -90,7 +89,6 @@ const autoscout24Slice = createSlice({
       state.actionsHistory = [...state.actionsHistory,action.payload].splice(-4)
     }
     ,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setInfo: (state, action: PayloadAction<infoState>) => {
       state.info = action.payload;
     },

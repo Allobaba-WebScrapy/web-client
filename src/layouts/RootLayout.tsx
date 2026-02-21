@@ -18,7 +18,7 @@ const RootLayout: React.FC = () => {
     }else{
       navigate("/scrapy")
     }
-  }, [isLogin])
+  }, [isLogin, dispatch, navigate, stateCode])
   return (
     <div className="min-h-[100vh] overflow-hidden">
       <Outlet />

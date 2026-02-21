@@ -33,15 +33,26 @@ export interface CardData {
 
 export interface CardType {
   message: CardData;
-  response: any;
+  response: unknown;
+}
+
+export interface CardProgress {
+  nCard: number;
+  length: number;
+}
+
+export interface ProgressStep {
+  type: string;
+  message?: string;
+  progress?: string;
+  card_progress?: CardProgress;
 }
 
 // Interface
 interface OrangeState {
   requestData: RequestDataState;
   cards: CardType[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  progress: any;
+  progress: ProgressStep[];
   cardsNumbers: number;
   loading: boolean;
   error: { type: string; message: string } | null;
@@ -76,23 +87,21 @@ const orange = createSlice({
     setRequestData: (state, action: PayloadAction<RequestDataState>) => {
       state.requestData = action.payload;
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addCard: (state, action: PayloadAction<CardType>) => {
       if(action.payload.message !== undefined){
         state.cards = [...state.cards, action.payload];
       }
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setProgress: (state, action: PayloadAction<any>) => {
+    setProgress: (state, action: PayloadAction<ProgressStep>) => {
       state.progress.push(action.payload);
     },
     updateProgressCardNumbersForEachPage: (
       state,
-      action: PayloadAction<any>
+      action: PayloadAction<CardProgress>
     ) => {
       // Find the last object with "Scraping url" in progress
       for (let i = state.progress.length - 1; i >= 0; i--) {
-        if (state.progress[i].message.includes("Get Non Deplicate Card")) {
+        if (state.progress[i].message?.includes("Get Non Deplicate Card")) {
           // Update the cardsNumbers property
           state.progress[i].card_progress = action.payload;
           break;

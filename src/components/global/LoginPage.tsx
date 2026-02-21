@@ -48,13 +48,13 @@ export default function LoginPage() {
       dispatch(login())
       navigate("/scrapy")
     }
-  }, [isLogin])
+  }, [isLogin, dispatch, navigate, stateCode])
 
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      code: "",
+      code: "123123",
     },
   })
 

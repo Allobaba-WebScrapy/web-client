@@ -48,7 +48,7 @@ export function SearchForm({
             "NOMBRE_GLOBAL_AVIS-DESC",
         ].includes(urlParams.get("tri") || "") &&
             urlParams.get("tri")) ||
-            "PERTINENCE-ASC";;
+            "PERTINENCE-ASC";
         setStartPage(page)
         setSortOption(tri)
     }, [url]);

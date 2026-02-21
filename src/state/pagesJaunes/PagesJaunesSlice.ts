@@ -68,12 +68,10 @@ const pagesJaunes = createSlice({
     setRequestData: (state, action: PayloadAction<RequestDataState>) => {
       state.requestData = action.payload;
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addCard: (state, action: PayloadAction<CardType>) => {
       state.cards = [...state.cards, action.payload];
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setProgress: (state, action: PayloadAction<any>) => {
+    setProgress: (state, action: PayloadAction<unknown>) => {
       state.progress.push(action.payload);
     },
     updateProgressCardNumbersForEachPage: (state) => {

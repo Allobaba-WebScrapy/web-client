@@ -2,7 +2,7 @@ import CryptoJS from "crypto-js";
 
 const SECRET_KEY = import.meta.env.VITE_SECRET_KEY || "allobaba";
 
-export function encryptData(data: any) {
+export function encryptData(data: unknown) {
   const dataString = JSON.stringify(data);
   const encryptedData = CryptoJS.AES.encrypt(dataString, SECRET_KEY).toString();
   return encryptedData;
@@ -17,7 +17,7 @@ export function decryptData(encryptedData: string) {
 export function checkCookie(name: string, value: string): boolean {
   const cookies = document.cookie.split(";");
   for (let i = 0; i < cookies.length; i++) {
-    let cookie = cookies[i].trim();
+    const cookie = cookies[i].trim();
     if (cookie.startsWith(name + "=")) {
       let cookieValue = cookie.substring(name.length + 1);
       cookieValue = decryptData(cookieValue)["code"];
